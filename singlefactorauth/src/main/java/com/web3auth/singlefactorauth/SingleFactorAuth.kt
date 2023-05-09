@@ -1,7 +1,6 @@
 package com.web3auth.singlefactorauth
 
 import android.content.Context
-import android.util.Log
 import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.types.*
 import org.json.JSONObject
@@ -58,12 +57,18 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             ).get()
             if (pubDetails.upgraded) {
                 val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
-                response.completeExceptionally(Exception("User has already enabled MFA"))
+                response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
                 return response
             }
             val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, details, pubDetails)
             if (retrieveSharesResponse.privKey == null) {
-                torusKeyCompletableFuture.completeExceptionally(Exception("Unable to get private key from torus nodes"))
+                torusKeyCompletableFuture.completeExceptionally(
+                    Exception(
+                        SFAError.getError(
+                            ErrorCode.PRIVATE_KEY_NOT_FOUND
+                        )
+                    )
+                )
             }
             torusKeyCompletableFuture.complete(
                 TorusKey(
@@ -86,7 +91,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                 ).get()
                 if (pubDetails.upgraded) {
                     val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
-                    response.completeExceptionally(Exception("User has already enabled MFA"))
+                    response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
                     return response
                 }
                 val retrieveSharesResponse =
@@ -98,7 +103,13 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                     json.toString(), 86400
                 )
                 if (retrieveSharesResponse.privKey == null) {
-                    torusKeyCompletableFuture.completeExceptionally(Exception("Unable to get private key from torus nodes"))
+                    torusKeyCompletableFuture.completeExceptionally(
+                        Exception(
+                            SFAError.getError(
+                                ErrorCode.PRIVATE_KEY_NOT_FOUND
+                            )
+                        )
+                    )
                 }
                 torusKeyCompletableFuture.complete(
                     TorusKey(
@@ -119,7 +130,12 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                             )
                         )
                     } else {
-                        Log.d("MainActivity_Web3Auth", error.message ?: "Something went wrong")
+                        torusKeyCompletableFuture.completeExceptionally(
+                            Exception(
+                                SFAError.getError(
+                                    ErrorCode.SOMETHING_WENT_WRONG
+                                )                            )
+                        )
                     }
                 }
             }
