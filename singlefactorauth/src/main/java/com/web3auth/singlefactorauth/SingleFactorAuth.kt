@@ -1,6 +1,7 @@
 package com.web3auth.singlefactorauth
 
 import android.content.Context
+import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.types.*
 import org.json.JSONObject
@@ -10,7 +11,6 @@ import org.torusresearch.torusutils.TorusUtils
 import org.torusresearch.torusutils.helpers.Utils
 import org.torusresearch.torusutils.types.*
 import org.web3j.crypto.Hash
-import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -18,6 +18,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
     private var nodeDetailManager: FetchNodeDetails
     private val torusUtils: TorusUtils
     private lateinit var sessionManager: SessionManager
+    private val gson = GsonBuilder().disableHtmlEscaping().create()
 
     init {
         nodeDetailManager = if (Utils.isEmpty(singleFactorAuthArgs.networkUrl)) {
@@ -78,65 +79,70 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             )
         } else {
             sessionManager = SessionManager(context)
-            val sessionId = sessionManager.getSessionId()
-            if (sessionId.isEmpty()) {
-                val details: NodeDetails =
-                    nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
-                        .get()
-                val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
-                    details.torusNodeEndpoints,
-                    details.torusNodePub,
-                    VerifierArgs(loginParams.verifier, loginParams.verifierId),
-                    true
-                ).get()
-                if (pubDetails.upgraded) {
-                    val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
-                    response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
-                    return response
-                }
-                val retrieveSharesResponse =
-                    getRetrieveSharesResponse(loginParams, details, pubDetails)
-                val json = JSONObject()
-                json.put("privateKey", retrieveSharesResponse.privKey.toString())
-                json.put("publicAddress", retrieveSharesResponse.ethAddress)
-                sessionManager.createSession(
-                    json.toString(), 86400
+            val details: NodeDetails =
+                nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
+                    .get()
+            val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
+                details.torusNodeEndpoints,
+                details.torusNodePub,
+                VerifierArgs(loginParams.verifier, loginParams.verifierId),
+                true
+            ).get()
+            if (pubDetails.upgraded) {
+                val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
+                response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
+                return response
+            }
+            val retrieveSharesResponse =
+                getRetrieveSharesResponse(loginParams, details, pubDetails)
+            val json = JSONObject()
+            json.put("privateKey", retrieveSharesResponse.privKey.toString())
+            json.put("publicAddress", retrieveSharesResponse.ethAddress)
+            sessionManager.createSession(
+                json.toString(), 86400
+            )
+            if (retrieveSharesResponse.privKey == null) {
+                torusKeyCompletableFuture.completeExceptionally(
+                    Exception(
+                        SFAError.getError(
+                            ErrorCode.PRIVATE_KEY_NOT_FOUND
+                        )
+                    )
                 )
-                if (retrieveSharesResponse.privKey == null) {
+            }
+            torusKeyCompletableFuture.complete(
+                TorusKey(
+                    retrieveSharesResponse.privKey,
+                    retrieveSharesResponse.ethAddress
+                )
+            )
+        }
+        return torusKeyCompletableFuture
+    }
+
+    fun initialize(context: Context? = null): CompletableFuture<TorusKey> {
+        val torusKeyCompletableFuture: CompletableFuture<TorusKey> =
+            CompletableFuture<TorusKey>()
+        if(context == null) {
+            torusKeyCompletableFuture.completeExceptionally(Exception(SFAError.getError(ErrorCode.CONTEXT_NOT_FOUND)))
+        } else {
+            sessionManager = SessionManager(context)
+            val sessionResponse: java8.util.concurrent.CompletableFuture<String> =
+                sessionManager.authorizeSession(false)
+            sessionResponse.whenComplete { response, error ->
+                if (error == null) {
+                    val tempJson = JSONObject(response)
+                    val torusKey =
+                        gson.fromJson(tempJson.toString(), TorusKey::class.java)
+                    torusKeyCompletableFuture.complete(torusKey)
+                } else {
                     torusKeyCompletableFuture.completeExceptionally(
                         Exception(
                             SFAError.getError(
-                                ErrorCode.PRIVATE_KEY_NOT_FOUND
+                                ErrorCode.SOMETHING_WENT_WRONG
                             )
                         )
                     )
-                }
-                torusKeyCompletableFuture.complete(
-                    TorusKey(
-                        retrieveSharesResponse.privKey,
-                        retrieveSharesResponse.ethAddress
-                    )
-                )
-            } else {
-                val sessionResponse: java8.util.concurrent.CompletableFuture<String> =
-                    sessionManager.authorizeSession(false)
-                sessionResponse.whenComplete { response, error ->
-                    if (error == null) {
-                        val tempJson = JSONObject(response)
-                        torusKeyCompletableFuture.complete(
-                            TorusKey(
-                                tempJson.get("privateKey") as BigInteger,
-                                tempJson.get("ethAddress") as String
-                            )
-                        )
-                    } else {
-                        torusKeyCompletableFuture.completeExceptionally(
-                            Exception(
-                                SFAError.getError(
-                                    ErrorCode.SOMETHING_WENT_WRONG
-                                )                            )
-                        )
-                    }
                 }
             }
         }

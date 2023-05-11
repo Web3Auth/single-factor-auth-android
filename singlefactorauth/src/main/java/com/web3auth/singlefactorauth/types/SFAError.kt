@@ -16,6 +16,9 @@ object SFAError {
             ErrorCode.RUNTIME_ERROR -> {
                 "Runtime Error"
             }
+            ErrorCode.CONTEXT_NOT_FOUND -> {
+                "Context not found"
+            }
         }
     }
 }
@@ -25,4 +28,5 @@ enum class ErrorCode {
     PRIVATE_KEY_NOT_FOUND,
     RUNTIME_ERROR,
     SOMETHING_WENT_WRONG,
+    CONTEXT_NOT_FOUND
 }
