@@ -46,77 +46,48 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
     fun getKey(loginParams: LoginParams, context: Context? = null): CompletableFuture<TorusKey> {
         val torusKeyCompletableFuture: CompletableFuture<TorusKey> =
             CompletableFuture<TorusKey>()
-        if (context == null) {
-            val details: NodeDetails =
-                nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
-                    .get()
-            val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
-                details.torusNodeEndpoints,
-                details.torusNodePub,
-                VerifierArgs(loginParams.verifier, loginParams.verifierId),
-                true
-            ).get()
-            if (pubDetails.upgraded) {
-                val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
-                response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
-                return response
-            }
-            val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, details, pubDetails)
-            if (retrieveSharesResponse.privKey == null) {
-                torusKeyCompletableFuture.completeExceptionally(
-                    Exception(
-                        SFAError.getError(
-                            ErrorCode.PRIVATE_KEY_NOT_FOUND
-                        )
+
+        val details: NodeDetails =
+            nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
+                .get()
+        val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
+            details.torusNodeEndpoints,
+            details.torusNodePub,
+            VerifierArgs(loginParams.verifier, loginParams.verifierId),
+            true
+        ).get()
+        if (pubDetails.upgraded) {
+            val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
+            response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
+            return response
+        }
+        val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, details, pubDetails)
+        if (retrieveSharesResponse.privKey == null) {
+            torusKeyCompletableFuture.completeExceptionally(
+                Exception(
+                    SFAError.getError(
+                        ErrorCode.PRIVATE_KEY_NOT_FOUND
                     )
                 )
-            }
-            torusKeyCompletableFuture.complete(
-                TorusKey(
-                    retrieveSharesResponse.privKey,
-                    retrieveSharesResponse.ethAddress
-                )
             )
-        } else {
+        }
+        torusKeyCompletableFuture.complete(
+            TorusKey(
+                retrieveSharesResponse.privKey,
+                retrieveSharesResponse.ethAddress
+            )
+        )
+
+        if (context != null) {
             sessionManager = SessionManager(context)
-            val details: NodeDetails =
-                nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
-                    .get()
-            val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
-                details.torusNodeEndpoints,
-                details.torusNodePub,
-                VerifierArgs(loginParams.verifier, loginParams.verifierId),
-                true
-            ).get()
-            if (pubDetails.upgraded) {
-                val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
-                response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
-                return response
-            }
-            val retrieveSharesResponse =
-                getRetrieveSharesResponse(loginParams, details, pubDetails)
             val json = JSONObject()
             json.put("privateKey", retrieveSharesResponse.privKey.toString())
             json.put("publicAddress", retrieveSharesResponse.ethAddress)
             sessionManager.createSession(
                 json.toString(), 86400
             )
-            if (retrieveSharesResponse.privKey == null) {
-                torusKeyCompletableFuture.completeExceptionally(
-                    Exception(
-                        SFAError.getError(
-                            ErrorCode.PRIVATE_KEY_NOT_FOUND
-                        )
-                    )
-                )
-            }
-            torusKeyCompletableFuture.complete(
-                TorusKey(
-                    retrieveSharesResponse.privKey,
-                    retrieveSharesResponse.ethAddress
-                )
-            )
         }
+
         return torusKeyCompletableFuture
     }
 
