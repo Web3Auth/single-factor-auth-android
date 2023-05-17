@@ -5,7 +5,6 @@
 > Web3Auth is where passwordless auth meets non-custodial key infrastructure for Web3 apps and wallets. By aggregating OAuth (Google, Twitter, Discord) logins, different wallets and innovative Multi Party Computation (MPC) - Web3Auth provides a seamless login experience to every user on your application.
 
 Web3Auth Single Factor Auth is the SDK that gives you the ability to start with just one key (aka, Single Factor) with Web3Auth, giving you the flexibility of implementing your own UI and UX.
-README.md
 
 
 ## 📖 Documentation
@@ -32,6 +31,14 @@ repositories {
    dependencies {
          implementation 'com.github.web3auth:single-factor-auth-android:0.0.1'
    }
+```
+
+### Permissions
+
+Open your app's `AndroidManifest.xml` file and add the following permission:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
 ```
 
 ## Requirements
