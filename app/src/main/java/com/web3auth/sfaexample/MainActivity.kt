@@ -40,9 +40,9 @@ class MainActivity : AppCompatActivity() {
         val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
         sessionResponse.whenComplete { torusKey, error ->
             if (error == null) {
-                tv.text = "Private Key: " + torusKey.privateKey.toString()
+                tv.text = "Private Key: ${torusKey.privateKey}"
             } else {
-                Log.d("MainActivity_Web3Auth", error.message ?: "Something went wrong")
+                Log.d("MainActivity_SFA", error.message ?: "Something went wrong")
             }
         }
     }
@@ -51,6 +51,6 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val torusKey: TorusKey = singleFactorAuth.getKey(loginParams, this.applicationContext).get()
-        tv.text = "Private Key: " + torusKey.privateKey.toString()
+        tv.text = "Private Key: ${torusKey.privateKey}"
     }
 }
