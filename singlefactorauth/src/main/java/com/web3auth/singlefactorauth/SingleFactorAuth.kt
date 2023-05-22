@@ -98,7 +98,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             torusKeyCompletableFuture.completeExceptionally(Exception(SFAError.getError(ErrorCode.CONTEXT_NOT_FOUND)))
         } else {
             sessionManager = SessionManager(context)
-            val sessionResponse: java8.util.concurrent.CompletableFuture<String> =
+            val sessionResponse: CompletableFuture<String> =
                 sessionManager.authorizeSession(false)
             sessionResponse.whenComplete { response, error ->
                 if (error == null) {
