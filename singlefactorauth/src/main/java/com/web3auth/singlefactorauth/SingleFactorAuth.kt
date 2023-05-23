@@ -107,13 +107,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                         gson.fromJson(tempJson.toString(), TorusKey::class.java)
                     torusKeyCompletableFuture.complete(torusKey)
                 } else {
-                    torusKeyCompletableFuture.completeExceptionally(
-                        Exception(
-                            SFAError.getError(
-                                ErrorCode.SOMETHING_WENT_WRONG
-                            )
-                        )
-                    )
+                    torusKeyCompletableFuture.complete(null)
                 }
             }
         }
