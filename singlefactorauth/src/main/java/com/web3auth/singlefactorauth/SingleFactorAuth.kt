@@ -43,7 +43,11 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
     }
 
     @Throws(ExecutionException::class, InterruptedException::class)
-    fun getKey(loginParams: LoginParams, context: Context? = null): CompletableFuture<TorusKey> {
+    fun getKey(
+        loginParams: LoginParams,
+        context: Context? = null,
+        sessionTime: Long = 86400
+    ): CompletableFuture<TorusKey> {
         val torusKeyCompletableFuture: CompletableFuture<TorusKey> =
             CompletableFuture<TorusKey>()
 
@@ -84,7 +88,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             json.put("privateKey", retrieveSharesResponse.privKey.toString())
             json.put("publicAddress", retrieveSharesResponse.ethAddress)
             sessionManager.createSession(
-                json.toString(), 86400
+                json.toString(), sessionTime
             )
         }
 

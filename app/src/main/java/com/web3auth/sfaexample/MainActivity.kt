@@ -50,7 +50,8 @@ class MainActivity : AppCompatActivity() {
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val torusKey: TorusKey = singleFactorAuth.getKey(loginParams, this.applicationContext).get()
+        val torusKey: TorusKey =
+            singleFactorAuth.getKey(loginParams, this.applicationContext, 86400).get()
         tv.text = "Private Key: ${torusKey.privateKey}"
     }
 }
