@@ -6,7 +6,6 @@
 
 Web3Auth Single Factor Auth is the SDK that gives you the ability to start with just one key (aka, Single Factor) with Web3Auth, giving you the flexibility of implementing your own UI and UX.
 
-
 ## 📖 Documentation
 
 Checkout the official [Web3Auth Documentation](https://web3auth.io/docs/sdk/web/core/) to get started.
@@ -43,6 +42,50 @@ Open your app's `AndroidManifest.xml` file and add the following permission:
 
 ## Requirements
 - Android API version 24 or newer is required.
+
+## 💥 Initialization & Usage
+
+In your activity class, configure it like this:
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    // ...
+    private lateinit var singleFactorAuth: SingleFactorAuth
+    private lateinit var singleFactorAuthArgs: SingleFactorAuthArgs
+    private lateinit var loginParams: LoginParams
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Initialize singleFactorAuthArgs with TorusNetwork type 
+        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        
+        // Initialize singleFactorAuth by passing singleFactorAuthArgs params
+        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
+
+        // Initialize loginParams by passing verifier, verifiedId(email) and idToken
+        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
+
+        // Use the getKey function to get the privateKey and public address for the user
+        val torusKey: TorusKey = singleFactorAuth.getKey(loginParams, this.applicationContext).get()
+        print("Private Key: ${torusKey.privateKey}")
+
+        // Call initialize function to get TorusKey value without relogging in user if a user has an active session it will return the TorusKey
+        val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
+        sessionResponse.whenComplete { torusKey, error ->
+            if (error == null) {
+                print("Private Key: ${torusKey.privateKey}")
+                print("Public Address: ${torusKey.publicAddress}")
+            }
+        }
+        
+        // ...
+    }
+    
+    //...
+}
+```
 
 ## 🩹 Examples
 
