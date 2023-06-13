@@ -28,7 +28,7 @@ repositories {
         maven { url "https://jitpack.io" }
    }
 dependencies {
-    implementation 'com.github.Web3auth:single-factor-auth-android:0.0.1'
+    implementation 'com.github.Web3auth:single-factor-auth-android:0.0.4'
 }
 ```
 
