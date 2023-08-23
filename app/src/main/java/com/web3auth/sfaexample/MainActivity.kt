@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
             getTorusKey()
         }
 
+        //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
             TorusNetwork.TESTNET,
             "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"

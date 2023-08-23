@@ -32,6 +32,7 @@ class SapphireDevnetTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
+        //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
             TorusNetwork.SAPPHIRE_DEVNET,
             "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
@@ -61,6 +62,7 @@ class SapphireDevnetTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
+        //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
             TorusNetwork.SAPPHIRE_DEVNET,
             "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"

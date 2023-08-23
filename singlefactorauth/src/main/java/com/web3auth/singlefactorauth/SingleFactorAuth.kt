@@ -41,7 +41,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             SingleFactorAuthArgs.SIGNER_MAP[singleFactorAuthArgs.getNetwork()] + "/api/sign"
         opts.allowHost =
             SingleFactorAuthArgs.SIGNER_MAP[singleFactorAuthArgs.getNetwork()] + "/api/allow"
-        //clientId is mandatory for SAPPHIRE networks.
+        //clientId is mandatory field.
         opts.clientId = singleFactorAuthArgs.getClientId()
         torusUtils = TorusUtils(opts)
     }
