@@ -81,12 +81,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
         torusKeyCompletableFuture.complete(
             TorusKey(
                 BigInteger(retrieveSharesResponse.getFinalKeyData().getPrivKey(), 16),
-                retrieveSharesResponse.getFinalKeyData().getEvmAddress(),
-                retrieveSharesResponse,
-                retrieveSharesResponse.getFinalKeyData(),
-                retrieveSharesResponse.getFinalKeyData(),
-                retrieveSharesResponse.getMetadata(),
-                null
+                retrieveSharesResponse.getFinalKeyData().getEvmAddress()
             )
         )
 
@@ -98,7 +93,6 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                 BigInteger(retrieveSharesResponse.getFinalKeyData().getPrivKey(), 16).toString()
             )
             json.put("publicAddress", retrieveSharesResponse.getFinalKeyData().getEvmAddress())
-            json.put("retrieveSharesResponse", retrieveSharesResponse)
             sessionManager.createSession(
                 json.toString(), sessionTime
             )
