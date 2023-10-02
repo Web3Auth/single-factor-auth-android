@@ -3,16 +3,22 @@ package com.web3auth.singlefactorauth.types
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.TorusNetwork
 
-class SingleFactorAuthArgs(network: TorusNetwork, clientId: String? = null) {
+class SingleFactorAuthArgs(
+    network: TorusNetwork,
+    clientId: String? = null,
+    usePnPKey: Boolean = false
+) {
     private var network: TorusNetwork
     var networkUrl: String? = null
     private var clientId: String? = null
+    private var usePnPKey: Boolean
 
     init {
         this.network = network
         if (clientId != null) {
             this.clientId = clientId
         }
+        this.usePnPKey = usePnPKey
     }
 
     fun getNetwork(): TorusNetwork {
@@ -24,11 +30,15 @@ class SingleFactorAuthArgs(network: TorusNetwork, clientId: String? = null) {
     }
 
     fun getClientId(): String? {
-        return clientId;
+        return clientId
     }
 
     fun setClientId(clientId: String) {
         this.clientId = clientId
+    }
+
+    fun getUsePnPKey(): Boolean {
+        return usePnPKey
     }
 
     companion object {

@@ -35,7 +35,8 @@ class SapphireMainnetTest {
         //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
             TorusNetwork.SAPPHIRE_MAINNET,
-            "BLuMSgycHD7DfSvbmN3ISZ5WkdpIjtByKi_cD9ASg_NS3jUYmrrH-dMuJU16z11cev5YocCWLAjWVfq95tFlOD8"
+            "BLuMSgycHD7DfSvbmN3ISZ5WkdpIjtByKi_cD9ASg_NS3jUYmrrH-dMuJU16z11cev5YocCWLAjWVfq95tFlOD8",
+            false
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(

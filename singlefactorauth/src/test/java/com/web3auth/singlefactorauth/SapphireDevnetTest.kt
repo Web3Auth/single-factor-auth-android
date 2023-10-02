@@ -35,7 +35,8 @@ class SapphireDevnetTest {
         //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
             TorusNetwork.SAPPHIRE_DEVNET,
-            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4",
+            false
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(

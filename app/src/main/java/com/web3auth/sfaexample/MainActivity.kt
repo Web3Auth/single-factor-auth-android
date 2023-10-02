@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
-    var TORUS_TEST_EMAIL = "hello@tor.us"
+    var TORUS_TEST_EMAIL = "saasas@tr.us"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +37,9 @@ class MainActivity : AppCompatActivity() {
 
         //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
-            TorusNetwork.TESTNET,
-            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
+            TorusNetwork.SAPPHIRE_DEVNET,
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4",
+            true
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
