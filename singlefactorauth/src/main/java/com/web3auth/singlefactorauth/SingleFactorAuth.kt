@@ -25,13 +25,11 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
     init {
         nodeDetailManager = if (Utils.isEmpty(singleFactorAuthArgs.networkUrl)) {
             FetchNodeDetails(
-                singleFactorAuthArgs.getNetwork(),
-                SingleFactorAuthArgs.CONTRACT_MAP[singleFactorAuthArgs.getNetwork()]
+                singleFactorAuthArgs.getNetwork()
             )
         } else {
             FetchNodeDetails(
-                singleFactorAuthArgs.networkUrl,
-                SingleFactorAuthArgs.CONTRACT_MAP[singleFactorAuthArgs.getNetwork()]
+                singleFactorAuthArgs.getNetwork()
             )
         }
         val opts = TorusCtorOptions("single-factor-auth-android")

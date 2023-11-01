@@ -1,11 +1,10 @@
 package com.web3auth.singlefactorauth.types
 
-import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.TorusNetwork
 
 class SingleFactorAuthArgs(
     network: TorusNetwork,
-    clientId: String? = null,
+    clientId: String,
     usePnPKey: Boolean = false
 ) {
     private var network: TorusNetwork
@@ -15,9 +14,7 @@ class SingleFactorAuthArgs(
 
     init {
         this.network = network
-        if (clientId != null) {
-            this.clientId = clientId
-        }
+        this.clientId = clientId
         this.usePnPKey = usePnPKey
     }
 
@@ -45,10 +42,10 @@ class SingleFactorAuthArgs(
         var CONTRACT_MAP: HashMap<TorusNetwork?, String?> =
             object : HashMap<TorusNetwork?, String?>() {
                 init {
-                    put(TorusNetwork.MAINNET, FetchNodeDetails.PROXY_ADDRESS_MAINNET)
-                    put(TorusNetwork.TESTNET, FetchNodeDetails.PROXY_ADDRESS_TESTNET)
-                    put(TorusNetwork.CYAN, FetchNodeDetails.PROXY_ADDRESS_CYAN)
-                    put(TorusNetwork.AQUA, FetchNodeDetails.PROXY_ADDRESS_AQUA)
+                    put(TorusNetwork.MAINNET, "0xf20336e16B5182637f09821c27BDe29b0AFcfe80")
+                    put(TorusNetwork.TESTNET, "0xd084604e5FA387FbC2Da8bAab07fDD6aDED4614A")
+                    put(TorusNetwork.CYAN, "0x9f072ba19b3370e512aa1b4bfcdaf97283168005")
+                    put(TorusNetwork.AQUA, "0x29Dea82a0509153b91040ee13cDBba0f03efb625")
                 }
             }
         var SIGNER_MAP: HashMap<TorusNetwork?, String?> = object : HashMap<TorusNetwork?, String?>() {
