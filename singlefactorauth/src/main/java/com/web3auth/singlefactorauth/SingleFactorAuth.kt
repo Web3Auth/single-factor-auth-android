@@ -32,15 +32,15 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                 singleFactorAuthArgs.getNetwork()
             )
         }
-        val opts = TorusCtorOptions("single-factor-auth-android")
+        //clientId is mandatory field.
+        val opts =
+            TorusCtorOptions("single-factor-auth-android", singleFactorAuthArgs.getClientId())
         opts.isEnableOneKey = true
         opts.network = singleFactorAuthArgs.getNetwork().toString()
         opts.signerHost =
             SingleFactorAuthArgs.SIGNER_MAP[singleFactorAuthArgs.getNetwork()] + "/api/sign"
         opts.allowHost =
             SingleFactorAuthArgs.SIGNER_MAP[singleFactorAuthArgs.getNetwork()] + "/api/allow"
-        //clientId is mandatory field.
-        opts.clientId = singleFactorAuthArgs.getClientId()
         torusUtils = TorusUtils(opts)
     }
 
