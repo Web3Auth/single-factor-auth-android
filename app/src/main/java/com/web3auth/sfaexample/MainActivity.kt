@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
-    var TORUS_TEST_EMAIL = "saasas@tr.us"
+    var TORUS_TEST_EMAIL = "hello@tor.us"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
-            TorusNetwork.SAPPHIRE_DEVNET,
-            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4",
+            TorusNetwork.SAPPHIRE_MAINNET,
+            "BEaGnq-mY0ZOXk2UT1ivWUe0PZ_iJX4Vyb6MtpOp7RMBu_6ErTrATlfuK3IaFcvHJr27h6L1T4owkBH6srLphIw",
             true
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
