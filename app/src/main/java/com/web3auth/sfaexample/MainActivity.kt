@@ -35,7 +35,12 @@ class MainActivity : AppCompatActivity() {
             getTorusKey()
         }
 
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        //clientId is mandatory field.
+        singleFactorAuthArgs = SingleFactorAuthArgs(
+            TorusNetwork.SAPPHIRE_MAINNET,
+            "BEaGnq-mY0ZOXk2UT1ivWUe0PZ_iJX4Vyb6MtpOp7RMBu_6ErTrATlfuK3IaFcvHJr27h6L1T4owkBH6srLphIw",
+            true
+        )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
         sessionResponse.whenComplete { torusKey, error ->

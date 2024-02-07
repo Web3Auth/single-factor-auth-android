@@ -32,7 +32,10 @@ class CyanTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.CYAN)
+        singleFactorAuthArgs = SingleFactorAuthArgs(
+            TorusNetwork.CYAN,
+            "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"
+        )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
@@ -51,14 +54,17 @@ class CyanTest {
         val requiredPrivateKey =
             BigInteger("44ca9a8ac5167ff11e0b48731f7bfde141fbbb0711d0abb54d5da554fb6fd40a", 16)
         assert(requiredPrivateKey == torusKey.privateKey)
-        assertEquals("0x1bbc291d4a8DCcb55fd969568D56b72a4BF62be8", torusKey.publicAddress)
+        assertEquals("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150", torusKey.publicAddress)
     }
 
     @DisplayName("Test Aggregate getTorusKey")
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.CYAN)
+        singleFactorAuthArgs = SingleFactorAuthArgs(
+            TorusNetwork.CYAN,
+            "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"
+        )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",

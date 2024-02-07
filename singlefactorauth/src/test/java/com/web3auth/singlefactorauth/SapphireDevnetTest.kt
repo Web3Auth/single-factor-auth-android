@@ -18,7 +18,7 @@ import java.security.interfaces.ECPublicKey
 import java.security.spec.ECPublicKeySpec
 import java.util.concurrent.ExecutionException
 
-class AquaTest {
+class SapphireDevnetTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
     private lateinit var singleFactorAuthArgs: SingleFactorAuthArgs
@@ -26,15 +26,17 @@ class AquaTest {
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
     var TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
-    var TORUS_TEST_EMAIL = "hello@tor.us"
+    var TORUS_TEST_EMAIL = "saasas@tr.us"
 
     @DisplayName("Test getTorusKey")
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
+        //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
-            TorusNetwork.AQUA,
-            "BM34K7ZqV3QwbDt0lvJFCdr4DxS9gyn7XZ2wZUaaf0Ddr71nLjPCNNYtXuGWxxc4i7ivYdgQzFqKlIot4IWrWCE"
+            TorusNetwork.SAPPHIRE_DEVNET,
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4",
+            false
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
@@ -52,18 +54,19 @@ class AquaTest {
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val torusKey: TorusKey = singleFactorAuth.getKey(loginParams).get()
         val requiredPrivateKey =
-            BigInteger("d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8", 16)
+            BigInteger("04eb166ddcf59275a210c7289dca4a026f87a33fd2d6ed22f56efae7eab4052c", 16)
         assert(requiredPrivateKey == torusKey.privateKey)
-        assertEquals("0x8b32926cD9224fec3B296aA7250B049029434807", torusKey.publicAddress)
+        assertEquals("0x4924F91F5d6701dDd41042D94832bB17B76F316F", torusKey.publicAddress)
     }
 
     @DisplayName("Test Aggregate getTorusKey")
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
+        //clientId is mandatory field.
         singleFactorAuthArgs = SingleFactorAuthArgs(
-            TorusNetwork.AQUA,
-            "BM34K7ZqV3QwbDt0lvJFCdr4DxS9gyn7XZ2wZUaaf0Ddr71nLjPCNNYtXuGWxxc4i7ivYdgQzFqKlIot4IWrWCE"
+            TorusNetwork.SAPPHIRE_DEVNET,
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
         )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
@@ -87,8 +90,8 @@ class AquaTest {
         )
         val torusKey: TorusKey = singleFactorAuth.getKey(loginParams).get()
         val requiredPrivateKey =
-            BigInteger("6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd", 16)
+            BigInteger("f0646a9e2b6776d003d8ab9beac748752f8b4a649fba7f9d0b10d87f4c11ce94", 16)
         assert(requiredPrivateKey == torusKey.privateKey)
-        assertEquals("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e", torusKey.publicAddress)
+        assertEquals("0x12db9ca82C26D767acEDc65FD0b3F12F886183e1", torusKey.publicAddress)
     }
 }

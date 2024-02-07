@@ -32,7 +32,11 @@ class SingleFactorAuthTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        //clientId is mandatory field.
+        singleFactorAuthArgs = SingleFactorAuthArgs(
+            TorusNetwork.TESTNET,
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
+        )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
@@ -58,7 +62,11 @@ class SingleFactorAuthTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        //clientId is mandatory field.
+        singleFactorAuthArgs = SingleFactorAuthArgs(
+            TorusNetwork.TESTNET,
+            "BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4"
+        )
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
@@ -79,7 +87,7 @@ class SingleFactorAuthTest {
                 )
             )
         )
-        val torusKey: TorusKey = singleFactorAuth!!.getKey(loginParams).get()
+        val torusKey: TorusKey = singleFactorAuth.getKey(loginParams).get()
         val requiredPrivateKey =
             BigInteger("ad47959db4cb2e63e641bac285df1b944f54d1a1cecdaeea40042b60d53c35d2", 16)
         assert(requiredPrivateKey == torusKey.privateKey)
