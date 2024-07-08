@@ -2,14 +2,15 @@ package com.web3auth.singlefactorauth.types
 
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.TorusNetwork
-import java.util.HashMap
 
-class SingleFactorAuthArgs(network: TorusNetwork) {
+class SingleFactorAuthArgs(network: TorusNetwork, clientid: String) {
     private var network: TorusNetwork
+    var clientid: String
     var networkUrl: String? = null
 
     init {
         this.network = network
+        this.clientid = clientid
     }
 
     fun getNetwork(): TorusNetwork {

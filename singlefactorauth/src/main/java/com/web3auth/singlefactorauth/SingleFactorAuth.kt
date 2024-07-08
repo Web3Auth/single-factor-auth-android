@@ -1,15 +1,27 @@
 package com.web3auth.singlefactorauth
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
-import com.web3auth.singlefactorauth.types.*
+import com.web3auth.singlefactorauth.types.AggregateVerifierParams
+import com.web3auth.singlefactorauth.types.ErrorCode
+import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.SFAError
+import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.TorusKey
+import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
 import org.torusresearch.torusutils.TorusUtils
 import org.torusresearch.torusutils.helpers.Utils
-import org.torusresearch.torusutils.types.*
+import org.torusresearch.torusutils.types.RetrieveSharesResponse
+import org.torusresearch.torusutils.types.TorusCtorOptions
+import org.torusresearch.torusutils.types.TorusPublicKey
+import org.torusresearch.torusutils.types.TypeOfUser
+import org.torusresearch.torusutils.types.VerifierArgs
 import org.web3j.crypto.Hash
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -32,7 +44,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                 SingleFactorAuthArgs.CONTRACT_MAP[singleFactorAuthArgs.getNetwork()]
             )
         }
-        val opts = TorusCtorOptions("single-factor-auth-android")
+        val opts = TorusCtorOptions("single-factor-auth-android", singleFactorAuthArgs.clientid)
         opts.isEnableOneKey = true
         opts.network = singleFactorAuthArgs.getNetwork().toString()
         opts.signerHost =
@@ -42,6 +54,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
         torusUtils = TorusUtils(opts)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Throws(ExecutionException::class, InterruptedException::class)
     fun getKey(
         loginParams: LoginParams,

@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.web3auth.singlefactorauth'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 24
-        targetSdk 33
+        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -37,7 +37,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     implementation 'org.web3j:crypto:4.9.5'
-    implementation 'org.torusresearch:torus-utils-java:3.1.2'
+    implementation 'com.github.torusresearch:torus-utils-java:3.2.1'
     implementation 'org.torusresearch:fetch-node-details-java:3.1.0'
     implementation 'com.google.code.gson:gson:2.9.1'
     implementation 'org.slf4j:slf4j-simple:2.0.3'
