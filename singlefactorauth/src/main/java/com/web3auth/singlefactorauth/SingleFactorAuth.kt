@@ -16,7 +16,6 @@ import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
 import org.torusresearch.torusutils.TorusUtils
-import org.torusresearch.torusutils.helpers.Utils
 import org.torusresearch.torusutils.types.RetrieveSharesResponse
 import org.torusresearch.torusutils.types.TorusCtorOptions
 import org.torusresearch.torusutils.types.TorusPublicKey
@@ -33,17 +32,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
     private val gson = GsonBuilder().disableHtmlEscaping().create()
 
     init {
-        nodeDetailManager = if (Utils.isEmpty(singleFactorAuthArgs.networkUrl)) {
-            FetchNodeDetails(
-                singleFactorAuthArgs.getNetwork(),
-                SingleFactorAuthArgs.CONTRACT_MAP[singleFactorAuthArgs.getNetwork()]
-            )
-        } else {
-            FetchNodeDetails(
-                singleFactorAuthArgs.networkUrl,
-                SingleFactorAuthArgs.CONTRACT_MAP[singleFactorAuthArgs.getNetwork()]
-            )
-        }
+        nodeDetailManager = FetchNodeDetails(singleFactorAuthArgs.getNetwork())
         val opts = TorusCtorOptions("single-factor-auth-android", singleFactorAuthArgs.clientid)
         opts.isEnableOneKey = true
         opts.network = singleFactorAuthArgs.getNetwork().toString()
@@ -101,7 +90,7 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
             json.put("privateKey", retrieveSharesResponse.privKey.toString())
             json.put("publicAddress", retrieveSharesResponse.ethAddress)
             sessionManager.createSession(
-                json.toString(), sessionTime
+                json.toString(), sessionTime, true
             )
         }
 
