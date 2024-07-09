@@ -1,9 +1,11 @@
 package com.web3auth.sfaexample
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.SingleFactorAuth
@@ -24,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     var TEST_VERIFIER = "torus-test-health"
     var TORUS_TEST_EMAIL = "hello@tor.us"
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             getTorusKey()
         }
 
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET, "YOUR_CLIENT_ID")
+        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.AQUA, "YOUR_CLIENT_ID")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
         sessionResponse.whenComplete { torusKey, error ->
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
