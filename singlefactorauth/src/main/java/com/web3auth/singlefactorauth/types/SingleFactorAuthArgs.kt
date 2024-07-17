@@ -1,9 +1,9 @@
 package com.web3auth.singlefactorauth.types
 
-import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 
-class SingleFactorAuthArgs(network: TorusNetwork, clientid: String) {
-    private var network: TorusNetwork
+class SingleFactorAuthArgs(network: Web3AuthNetwork, clientid: String) {
+    private var network: Web3AuthNetwork
     var clientid: String
     var networkUrl: String? = null
 
@@ -12,21 +12,22 @@ class SingleFactorAuthArgs(network: TorusNetwork, clientid: String) {
         this.clientid = clientid
     }
 
-    fun getNetwork(): TorusNetwork {
+    fun getNetwork(): Web3AuthNetwork {
         return network
     }
 
-    fun setNetwork(network: TorusNetwork) {
+    fun setNetwork(network: Web3AuthNetwork) {
         this.network = network
     }
 
     companion object {
-        var SIGNER_MAP: HashMap<TorusNetwork?, String?> = object : HashMap<TorusNetwork?, String?>() {
+        var SIGNER_MAP: HashMap<Web3AuthNetwork?, String?> =
+            object : HashMap<Web3AuthNetwork?, String?>() {
             init {
-                put(TorusNetwork.MAINNET, "https://signer.tor.us")
-                put(TorusNetwork.TESTNET, "https://signer.tor.us")
-                put(TorusNetwork.CYAN, "https://signer-polygon.tor.us")
-                put(TorusNetwork.AQUA, "https://signer-polygon.tor.us")
+                put(Web3AuthNetwork.MAINNET, "https://signer.tor.us")
+                put(Web3AuthNetwork.TESTNET, "https://signer.tor.us")
+                put(Web3AuthNetwork.CYAN, "https://signer-polygon.tor.us")
+                put(Web3AuthNetwork.AQUA, "https://signer-polygon.tor.us")
             }
         }
     }

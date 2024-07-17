@@ -12,7 +12,7 @@ import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusKey
-import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 import java.util.concurrent.CompletableFuture
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             getTorusKey()
         }
 
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.AQUA, "YOUR_CLIENT_ID")
+        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
         sessionResponse.whenComplete { torusKey, error ->

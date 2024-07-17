@@ -10,7 +10,7 @@ import com.web3auth.singlefactorauth.utils.PemUtils
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import org.junit.jupiter.api.DisplayName
-import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.interfaces.ECPrivateKey
@@ -32,7 +32,7 @@ class SingleFactorAuthTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET, "YOUR_CLIENT_ID")
+        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.TESTNET, "YOUR_CLIENT_ID")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
@@ -58,7 +58,7 @@ class SingleFactorAuthTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET, "YOUR_CLIENT_ID")
+        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.TESTNET, "YOUR_CLIENT_ID")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
