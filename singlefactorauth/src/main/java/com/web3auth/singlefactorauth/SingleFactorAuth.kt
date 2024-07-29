@@ -16,26 +16,30 @@ import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
 import org.torusresearch.torusutils.TorusUtils
-import org.torusresearch.torusutils.types.RetrieveSharesResponse
 import org.torusresearch.torusutils.types.TorusCtorOptions
 import org.torusresearch.torusutils.types.TorusPublicKey
 import org.torusresearch.torusutils.types.TypeOfUser
 import org.torusresearch.torusutils.types.VerifierArgs
 import org.web3j.crypto.Hash
+import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
-    private var nodeDetailManager: FetchNodeDetails
+    private var nodeDetailManager: FetchNodeDetails =
+        FetchNodeDetails(singleFactorAuthArgs.getNetwork())
     private val torusUtils: TorusUtils
     private lateinit var sessionManager: SessionManager
     private val gson = GsonBuilder().disableHtmlEscaping().create()
+    private var _singleFactorAuthArgs = singleFactorAuthArgs
 
     init {
-        nodeDetailManager = FetchNodeDetails(singleFactorAuthArgs.getNetwork())
-        val opts = TorusCtorOptions("single-factor-auth-android", singleFactorAuthArgs.clientid)
+        val opts = TorusCtorOptions(
+            "single-factor-auth-android",
+            singleFactorAuthArgs.clientid,
+            singleFactorAuthArgs.getNetwork()
+        )
         opts.isEnableOneKey = true
-        opts.network = singleFactorAuthArgs.getNetwork().toString()
         opts.signerHost =
             SingleFactorAuthArgs.SIGNER_MAP[singleFactorAuthArgs.getNetwork()] + "/api/sign"
         opts.allowHost =
@@ -53,22 +57,20 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
         val torusKeyCompletableFuture: CompletableFuture<TorusKey> =
             CompletableFuture<TorusKey>()
 
-        val details: NodeDetails =
+        val nodeDetails: NodeDetails =
             nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
                 .get()
         val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
-            details.torusNodeEndpoints,
-            details.torusNodePub,
-            VerifierArgs(loginParams.verifier, loginParams.verifierId),
-            true
+            getTorusNodeEndpoints(nodeDetails),
+            VerifierArgs(loginParams.verifier, loginParams.verifierId)
         ).get()
-        if (pubDetails.upgraded) {
+        if (pubDetails.getMetadata().upgraded) {
             val response: CompletableFuture<TorusKey> = CompletableFuture<TorusKey>()
             response.completeExceptionally(Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA)))
             return response
         }
-        val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, details, pubDetails)
-        if (retrieveSharesResponse.privKey == null) {
+        val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, nodeDetails, pubDetails)
+        if (retrieveSharesResponse.getFinalKeyData().getPrivKey() == null) {
             torusKeyCompletableFuture.completeExceptionally(
                 Exception(
                     SFAError.getError(
@@ -79,16 +81,18 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
         }
         torusKeyCompletableFuture.complete(
             TorusKey(
-                retrieveSharesResponse.privKey,
-                retrieveSharesResponse.ethAddress
+                BigInteger(retrieveSharesResponse.getFinalKeyData().getPrivKey(), 16),
+                retrieveSharesResponse.getFinalKeyData().getWalletAddress()
             )
         )
 
         if (context != null) {
             sessionManager = SessionManager(context)
             val json = JSONObject()
-            json.put("privateKey", retrieveSharesResponse.privKey.toString())
-            json.put("publicAddress", retrieveSharesResponse.ethAddress)
+            json.put("privateKey",
+                retrieveSharesResponse.getFinalKeyData().getPrivKey()
+                    ?.let { BigInteger(it, 16).toString() })
+            json.put("publicAddress", retrieveSharesResponse.getFinalKeyData().walletAddress)
             sessionManager.createSession(
                 json.toString(), sessionTime, true
             )
@@ -122,13 +126,17 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
 
     private fun getRetrieveSharesResponse(
         loginParams: LoginParams,
-        details: NodeDetails,
+        nodeDetails: NodeDetails,
         pubDetails: TorusPublicKey
-    ): RetrieveSharesResponse {
-        if (pubDetails.typeOfUser.equals(TypeOfUser.v1)) {
-            torusUtils.getOrSetNonce(pubDetails.x, pubDetails.y, false).get()
+    ): org.torusresearch.torusutils.types.TorusKey {
+        if (pubDetails.getMetadata().typeOfUser.equals(TypeOfUser.v1)) {
+            torusUtils.getOrSetNonce(
+                pubDetails.getMetadata().getPubNonce().x,
+                pubDetails.getMetadata().getPubNonce().y,
+                false
+            ).get()
         }
-        val retrieveSharesResponse: RetrieveSharesResponse
+        val retrieveSharesResponse: org.torusresearch.torusutils.types.TorusKey
         if (loginParams.subVerifierInfoArray != null && loginParams.subVerifierInfoArray?.isNotEmpty() == true) {
             val subVerifierInfoArray: Array<TorusSubVerifierInfo> =
                 loginParams.subVerifierInfoArray!!
@@ -169,23 +177,33 @@ class SingleFactorAuth(singleFactorAuthArgs: SingleFactorAuthArgs) {
                 nodeDetailManager.getNodeDetails(loginParams.verifier, aggregateVerifierId)
                     .get()
             retrieveSharesResponse = torusUtils.retrieveShares(
-                nodeDetails.torusNodeEndpoints,
+                getTorusNodeEndpoints(nodeDetails),
                 nodeDetails.torusIndexes,
                 loginParams.verifier,
                 aggregateVerifierParamsHashMap,
-                aggregateIdToken
+                aggregateIdToken,
+                nodeDetails.torusNodePub
             ).get()
         } else {
             val verifierParams = HashMap<String, Any>()
             verifierParams["verifier_id"] = loginParams.verifierId
             retrieveSharesResponse = torusUtils.retrieveShares(
-                details.torusNodeEndpoints,
-                details.torusIndexes,
+                getTorusNodeEndpoints(nodeDetails),
+                nodeDetails.torusIndexes,
                 loginParams.verifier,
                 verifierParams,
-                loginParams.idToken
+                loginParams.idToken,
+                nodeDetails.torusNodePub
             ).get()
         }
         return retrieveSharesResponse
+    }
+
+    private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?>? {
+        return if (_singleFactorAuthArgs.getNetwork().toString().contains("sapphire")) {
+            nodeDetails.torusNodeSSSEndpoints
+        } else {
+            nodeDetails.torusNodeEndpoints
+        }
     }
 }
