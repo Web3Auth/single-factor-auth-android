@@ -31,7 +31,7 @@ class AquaTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID")
+        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", false)
         singleFactorAuth = SingleFactorAuth(sfaParams)
         val privateKey = PemUtils.readPrivateKeyFromFile(
             "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
