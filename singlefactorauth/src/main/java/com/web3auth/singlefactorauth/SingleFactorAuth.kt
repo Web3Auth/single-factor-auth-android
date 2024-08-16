@@ -24,7 +24,6 @@ import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.torusresearch.torusutils.types.common.TypeOfUser
 import org.web3j.crypto.Hash
-import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -67,7 +66,7 @@ class SingleFactorAuth(sfaParams: SFAParams) {
             return response
         }
         val retrieveSharesResponse = getRetrieveSharesResponse(loginParams, nodeDetails, pubDetails)
-        if (retrieveSharesResponse.getFinalKeyData().getPrivKey() == null) {
+        if (retrieveSharesResponse.finalKeyData.privKey == null) {
             torusKeyCompletableFuture.completeExceptionally(
                 Exception(
                     SFAError.getError(
@@ -78,7 +77,7 @@ class SingleFactorAuth(sfaParams: SFAParams) {
         }
         torusKeyCompletableFuture.complete(
             SFAKey(
-                retrieveSharesResponse.finalKeyData.privKey?.let { BigInteger(it, 16) },
+                retrieveSharesResponse.finalKeyData.privKey,
                 retrieveSharesResponse.finalKeyData.walletAddress
             )
         )
