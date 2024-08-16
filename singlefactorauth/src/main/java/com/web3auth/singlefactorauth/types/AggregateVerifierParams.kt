@@ -1,11 +1,13 @@
 package com.web3auth.singlefactorauth.types
 
+import org.torusresearch.torusutils.types.VerifyParams
+
 class AggregateVerifierParams {
-    lateinit var verify_params: Array<VerifierParams?>
+    lateinit var verify_params: Array<VerifyParams?>
     lateinit var sub_verifier_ids: Array<String?>
     lateinit var verifier_id: String
 
-    fun setVerifyParamItem(verify_param: VerifierParams, index: Int) {
+    fun setVerifyParamItem(verify_param: VerifyParams, index: Int) {
         verify_params[index] = verify_param
     }
 

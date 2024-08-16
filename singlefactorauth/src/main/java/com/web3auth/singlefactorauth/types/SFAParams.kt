@@ -2,7 +2,7 @@ package com.web3auth.singlefactorauth.types
 
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 
-class SingleFactorAuthArgs(network: Web3AuthNetwork, clientid: String, usePnPKey: Boolean = false) {
+class SFAParams(network: Web3AuthNetwork, clientid: String, usePnPKey: Boolean = false) {
     private var network: Web3AuthNetwork
     var clientid: String
     var networkUrl: String? = null

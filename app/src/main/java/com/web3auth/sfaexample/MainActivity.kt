@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
-import com.web3auth.singlefactorauth.types.TorusKey
+import com.web3auth.singlefactorauth.types.SFAKey
+import com.web3auth.singlefactorauth.types.SFAParams
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 import java.util.concurrent.CompletableFuture
 
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTorusKey: Button
     private lateinit var tv: TextView
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var singleFactorAuthArgs: SingleFactorAuthArgs
+    private lateinit var sfaParams: SFAParams
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
@@ -38,13 +38,14 @@ class MainActivity : AppCompatActivity() {
             getTorusKey()
         }
 
-        singleFactorAuthArgs =
-            SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", false)
-        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
-        val sessionResponse: CompletableFuture<TorusKey> = singleFactorAuth.initialize(this.applicationContext)
-        sessionResponse.whenComplete { torusKey, error ->
+        sfaParams =
+            SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", false)
+        singleFactorAuth = SingleFactorAuth(sfaParams)
+        val sessionResponse: CompletableFuture<SFAKey> =
+            singleFactorAuth.initialize(this.applicationContext)
+        sessionResponse.whenComplete { sfaKey, error ->
             if (error == null) {
-                tv.text = "Private Key: ${torusKey.privateKey}"
+                tv.text = "Private Key: ${sfaKey.privateKey}"
             } else {
                 Log.d("MainActivity_SFA", error.message ?: "Something went wrong")
             }
@@ -55,8 +56,8 @@ class MainActivity : AppCompatActivity() {
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val torusKey: TorusKey =
+        val sfaKey =
             singleFactorAuth.getKey(loginParams, this.applicationContext, 86400).get()
-        tv.text = "Private Key: ${torusKey.privateKey}"
+        tv.text = "Private Key: ${sfaKey.privateKey}"
     }
 }
