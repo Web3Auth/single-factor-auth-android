@@ -1,7 +1,6 @@
 package com.web3auth.singlefactorauth.types
 
 object SFAError {
-
     fun getError(errorCode: ErrorCode): String {
         return when (errorCode) {
             ErrorCode.USER_ALREADY_ENABLED_MFA -> {

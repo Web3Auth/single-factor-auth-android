@@ -1,14 +1,15 @@
 package com.web3auth.singlefactorauth
 
+import androidx.test.platform.app.InstrumentationRegistry
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
+import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
-import com.web3auth.singlefactorauth.utils.JwtUtils
-import com.web3auth.singlefactorauth.utils.PemUtils
-import junit.framework.TestCase.assertEquals
+import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
+import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
+import com.web3auth.singlefactorauth.utils.WellKnownSecret
+import junit.framework.TestCase.fail
 import org.junit.Test
-import org.junit.jupiter.api.DisplayName
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 import java.math.BigInteger
 import java.security.KeyFactory
@@ -20,26 +21,25 @@ import java.util.concurrent.ExecutionException
 class SapphireMainnetTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SFAParams
+    private lateinit var sfaParams: SingleFactorAuthArgs
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
     var TEST_AGGREGRATE_VERIFIER = "torus-aggregate-sapphire-mainnet"
-    var TORUS_TEST_EMAIL = "hello@tor.us"
+    var TORUS_TEST_EMAIL = "devnettestuser@tor.us"
 
-    @DisplayName("Test getTorusKey")
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
-        //clientId is mandatory field.
-        sfaParams = SFAParams(
+        val context = InstrumentationRegistry.getInstrumentation().context
+        sfaParams = SingleFactorAuthArgs(
             Web3AuthNetwork.SAPPHIRE_MAINNET,
-            "BLuMSgycHD7DfSvbmN3ISZ5WkdpIjtByKi_cD9ASg_NS3jUYmrrH-dMuJU16z11cev5YocCWLAjWVfq95tFlOD8",
-            false
+            "CLIENT ID",
+            null, 0
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams)
-        val privateKey = PemUtils.readPrivateKeyFromFile(
-            "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        val privateKey = readPrivateKeyFromReader(
+            WellKnownSecret.pem(),
             "EC"
         ) as ECPrivateKey
         val publicKey = KeyFactory.getInstance("EC").generatePublic(
@@ -49,27 +49,30 @@ class SapphireMainnetTest {
             )
         ) as ECPublicKey
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = JwtUtils.generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfaKey = singleFactorAuth.getKey(loginParams).get()
-        val requiredPrivateKey =
-            BigInteger("dfb39b84e0c64b8c44605151bf8670ae6eda232056265434729b6a8a50fa3419", 16)
-        assert(requiredPrivateKey == sfaKey.privateKey)
-        assertEquals("0x70520A7F04868ACad901683699Fa32765C9F6871", sfaKey.publicAddress)
+        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
+        loginParams = LoginParams(TEST_VERIFIER,TORUS_TEST_EMAIL, idToken)
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
+        if (TorusSFAKey != null) {
+            assert("0x0934d844a0a6db37CF75aF0269436ae1b2Ae5D36" == TorusSFAKey.getPublicAddress())
+            val requiredPrivateKey =
+                BigInteger("2c4b346a91ecd11fe8a02d111d00bd921bf9b543f0a1e811face91b5f28947d6", 16)
+            assert(requiredPrivateKey.toString(16) == TorusSFAKey.getPrivateKey())
+        } else {
+            fail()
+        }
     }
 
-    @DisplayName("Test Aggregate getTorusKey")
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
-        //clientId is mandatory field.
-        sfaParams = SFAParams(
+        val context = InstrumentationRegistry.getInstrumentation().context
+        sfaParams = SingleFactorAuthArgs(
             Web3AuthNetwork.SAPPHIRE_MAINNET,
-            "YOUR_CLIENT_ID"
+            "CLIENT_ID"
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams)
-        val privateKey = PemUtils.readPrivateKeyFromFile(
-            "src/test/java/com/web3Auth/singlefactorauth/keys/key.pem",
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        val privateKey = readPrivateKeyFromReader(
+            WellKnownSecret.pem(),
             "EC"
         ) as ECPrivateKey
         val publicKey = KeyFactory.getInstance("EC").generatePublic(
@@ -79,7 +82,7 @@ class SapphireMainnetTest {
             )
         ) as ECPublicKey
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = JwtUtils.generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
+        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(
             TEST_AGGREGRATE_VERIFIER, TORUS_TEST_EMAIL, idToken, arrayOf(
                 TorusSubVerifierInfo(
@@ -87,10 +90,18 @@ class SapphireMainnetTest {
                 )
             )
         )
-        val sfaKey = singleFactorAuth.getKey(loginParams).get()
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
         val requiredPrivateKey =
             BigInteger("9a8c7d58d4246507cdd6b2c34850eac52a35c4d6ebea8cefbec26010ad8011d6", 16)
-        assert(requiredPrivateKey == sfaKey.privateKey)
-        assertEquals("0xFC891f704CF73D01e24F2be24f6afF3C2ab19C98", sfaKey.publicAddress)
+
+        if (TorusSFAKey != null) {
+            assert(requiredPrivateKey.toString(16) == TorusSFAKey.getPrivateKey())
+            assert(
+                "0xFC891f704CF73D01e24F2be24f6afF3C2ab19C98" ==
+                TorusSFAKey.getPublicAddress()
+            )
+        } else {
+            fail()
+        }
     }
 }
