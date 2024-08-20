@@ -3,7 +3,12 @@ package com.web3auth.singlefactorauth
 import android.content.Context
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
-import com.web3auth.singlefactorauth.types.*
+import com.web3auth.singlefactorauth.types.ErrorCode
+import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.SFAError
+import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.TorusSFAKey
+import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
@@ -15,6 +20,7 @@ import org.torusresearch.torusutils.types.common.TorusKey
 import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
+import java.util.concurrent.CompletableFuture
 
 class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
     private var nodeDetailManager: FetchNodeDetails =
@@ -36,9 +42,21 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         sessionManager = SessionManager(ctx)
     }
 
-    fun initialize(): TorusSFAKey {
-         val data = sessionManager.authorizeSession(false).get()
-         return gson.fromJson(JSONObject(data).toString(), TorusSFAKey::class.java)
+    fun initialize(): CompletableFuture<TorusSFAKey> {
+        val sfaKeyCompletableFuture: CompletableFuture<TorusSFAKey> =
+            CompletableFuture<TorusSFAKey>()
+        val sessionResponse = sessionManager.authorizeSession(false)
+        sessionResponse.whenComplete { response, error ->
+            if (error == null) {
+                val tempJson = JSONObject(response)
+                val torusKey =
+                    gson.fromJson(tempJson.toString(), TorusSFAKey::class.java)
+                sfaKeyCompletableFuture.complete(torusKey)
+            } else {
+                sfaKeyCompletableFuture.complete(null)
+            }
+        }
+        return sfaKeyCompletableFuture
     }
 
     private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {
@@ -109,7 +127,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         val json = JSONObject()
         if (torusSFAKey != null) {
             json.put("privateKey", torusSFAKey.getPrivateKey())
-            json.put("publickAddress", torusSFAKey.getPublicAddress())
+            json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
         sessionManager.createSession(json.toString(),86400,true).get()

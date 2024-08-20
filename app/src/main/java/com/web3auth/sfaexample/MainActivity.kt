@@ -1,13 +1,9 @@
 package com.web3auth.sfaexample
 
-import android.app.Application
-import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.test.core.app.ApplicationProvider
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
@@ -37,13 +33,21 @@ class MainActivity : AppCompatActivity() {
         sfaParams =
             SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null,0)
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
-        singleFactorAuth.initialize()
-        singleFactorAuth.getKey(loginParams)
+        val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
+        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
+        val sfaKey = singleFactorAuth.initialize()
+        sfaKey.whenComplete { response, error ->
+            if (error == null) {
+                val text = "Private Key: ${response.getPrivateKey()}"
+                tv.text = text
+            } else {
+                tv.text = "Error: ${error.message}"
+            }
+        }
+        //singleFactorAuth.getKey(loginParams)
     }
 
     private fun getTorusKey() {
-        val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val TorusSFAKey =
             singleFactorAuth.getKey(loginParams)
         if (TorusSFAKey != null) {
