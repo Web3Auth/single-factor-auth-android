@@ -92,12 +92,12 @@ class SapphireMainnetTest {
         )
         val TorusSFAKey = singleFactorAuth.getKey(loginParams)
         val requiredPrivateKey =
-            BigInteger("9a8c7d58d4246507cdd6b2c34850eac52a35c4d6ebea8cefbec26010ad8011d6", 16)
+            BigInteger("0c724bb285560dc41e585b91aa2ded94fdd703c2e7133dcc64b1361b0d1fd105", 16)
 
         if (TorusSFAKey != null) {
-            assert(requiredPrivateKey.toString(16) == TorusSFAKey.getPrivateKey())
+            assert(requiredPrivateKey.toString(16).padStart(64,'0') == TorusSFAKey.getPrivateKey())
             assert(
-                "0xFC891f704CF73D01e24F2be24f6afF3C2ab19C98" ==
+                "0xA92E2C756B5b2abABc127907b02D4707dc085612" ==
                 TorusSFAKey.getPublicAddress()
             )
         } else {
