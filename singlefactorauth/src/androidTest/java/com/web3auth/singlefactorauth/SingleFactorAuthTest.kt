@@ -29,7 +29,6 @@ class SingleFactorAuthTest {
     var TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
     var TORUS_TEST_EMAIL = "hello@tor.us"
 
-    // TODO: Debug this
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
