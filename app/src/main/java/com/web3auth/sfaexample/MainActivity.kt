@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         sfaParams =
-            SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null,0,false)
+            SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null,0)
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
         singleFactorAuth.initialize()
         singleFactorAuth.getKey(loginParams)
