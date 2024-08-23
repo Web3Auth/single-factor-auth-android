@@ -36,8 +36,8 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         sessionManager = SessionManager(ctx)
     }
 
-    fun initialize(): TorusSFAKey {
-         val data = sessionManager.authorizeSession(false).get()
+    fun initialize(ctx: Context): TorusSFAKey {
+         val data = sessionManager.authorizeSession(ctx).get()
          return gson.fromJson(JSONObject(data).toString(), TorusSFAKey::class.java)
     }
 
@@ -92,6 +92,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
 
     fun getKey(
         loginParams: LoginParams,
+        ctx: Context
     ): TorusSFAKey? {
         val torusKey = getTorusKey(loginParams)
 
@@ -112,7 +113,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
             json.put("publickAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(),86400,true).get()
+        sessionManager.createSession(json.toString(),86400,ctx).get()
         return torusSFAKey
     }
 }

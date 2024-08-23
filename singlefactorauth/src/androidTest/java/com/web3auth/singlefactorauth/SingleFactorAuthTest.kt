@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
-import com.web3auth.singlefactorauth.utils.JwtUtils
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
@@ -48,7 +47,7 @@ class SingleFactorAuthTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams,context)
         if (TorusSFAKey != null) {
             assert("0x90A926b698047b4A87265ba1E9D8b512E8489067" == TorusSFAKey.getPublicAddress())
             val requiredPrivateKey =
@@ -84,7 +83,7 @@ class SingleFactorAuthTest {
                 )
             )
         )
-        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams,context)
         val requiredPrivateKey =
             BigInteger("68390578bbdab74e9883de58d3919c176662852bdd42a783bc3a08f1a1024e0c", 16)
         if (TorusSFAKey != null) {

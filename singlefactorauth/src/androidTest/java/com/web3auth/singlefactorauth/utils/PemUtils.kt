@@ -69,19 +69,19 @@ object PemUtils {
 
     @Throws(IOException::class)
     fun readPrivateKeyFromReader(reader: Reader, algorithm: String): PrivateKey? {
-        val reader = PemReader(reader)
-        val pemObject = reader.readPemObject()
+        val pemReader = PemReader(reader)
+        val pemObject = pemReader.readPemObject()
         val content = pemObject.content
-        reader.close()
+        pemReader.close()
         return getPrivateKey(content, algorithm)
     }
 
     @Throws(IOException::class)
     fun readPublicKeyFromReader(reader: Reader, algorithm: String): PublicKey? {
-        val reader = PemReader(reader)
-        val pemObject = reader.readPemObject()
+        val pemReader = PemReader(reader)
+        val pemObject = pemReader.readPemObject()
         val content = pemObject.content
-        reader.close()
+        pemReader.close()
         return getPublicKey(content, algorithm)
     }
 }

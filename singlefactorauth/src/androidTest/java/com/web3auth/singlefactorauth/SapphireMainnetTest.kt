@@ -51,7 +51,7 @@ class SapphireMainnetTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER,TORUS_TEST_EMAIL, idToken)
-        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams,context)
         if (TorusSFAKey != null) {
             assert("0x0934d844a0a6db37CF75aF0269436ae1b2Ae5D36" == TorusSFAKey.getPublicAddress())
             val requiredPrivateKey =
@@ -90,7 +90,7 @@ class SapphireMainnetTest {
                 )
             )
         )
-        val TorusSFAKey = singleFactorAuth.getKey(loginParams)
+        val TorusSFAKey = singleFactorAuth.getKey(loginParams,context)
         val requiredPrivateKey =
             BigInteger("0c724bb285560dc41e585b91aa2ded94fdd703c2e7133dcc64b1361b0d1fd105", 16)
 

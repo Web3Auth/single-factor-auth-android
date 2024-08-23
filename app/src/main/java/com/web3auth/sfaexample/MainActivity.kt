@@ -37,15 +37,15 @@ class MainActivity : AppCompatActivity() {
         sfaParams =
             SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null,0)
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
-        singleFactorAuth.initialize()
-        singleFactorAuth.getKey(loginParams)
+        singleFactorAuth.initialize(this.applicationContext)
+        singleFactorAuth.getKey(loginParams, this.applicationContext)
     }
 
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val TorusSFAKey =
-            singleFactorAuth.getKey(loginParams)
+            singleFactorAuth.getKey(loginParams, this.applicationContext)
         if (TorusSFAKey != null) {
             val text = "Private Key: ${TorusSFAKey.getPrivateKey()}"
             tv.text = text
