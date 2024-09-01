@@ -15,6 +15,6 @@ class TorusSFAKey(
 
     // This class needs to implement @Serializable
     override fun toString(): String {
-        return "{privateKey=$privateKey, publicAddress=$publicAddress}";
+        return "{privateKey=$privateKey, publicAddress=$publicAddress}"
     }
 }
