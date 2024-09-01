@@ -42,7 +42,7 @@ dependencies {
     // SFA
     implementation project(":singlefactorauth")
     implementation 'com.auth0:java-jwt:3.19.2'
-    implementation 'org.web3j:crypto:4.9.5'
+    implementation 'org.web3j:crypto:4.8.8-android'
     implementation 'org.torusresearch:fetch-node-details-java:5.0.0'
     api 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
