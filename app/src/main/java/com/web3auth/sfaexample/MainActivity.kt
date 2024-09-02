@@ -35,24 +35,20 @@ class MainActivity : AppCompatActivity() {
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
-        // Consider exposing getSessionId() to avoid this try..catch in all implementations of this SDK
-        try {
-            // Already has done login and has sessionId stored.
-            singleFactorAuth.initialize(this.applicationContext)
-        } catch (ex: java.lang.Exception) {
-            // Try login and create new session which will then be stored
-            singleFactorAuth.getKey(loginParams, this)
-            singleFactorAuth.initialize(this.applicationContext)
+        if (singleFactorAuth.isSessionIdExists()) {
+            val torusSFAKey = singleFactorAuth.initialize(this.applicationContext)
+            val text = "Private Key: ${torusSFAKey.getPrivateKey()}"
+            tv.text = text
         }
     }
 
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val TorusSFAKey =
+        val torusSFAKey =
             singleFactorAuth.getKey(loginParams, this.applicationContext)
-        if (TorusSFAKey != null) {
-            val text = "Private Key: ${TorusSFAKey.getPrivateKey()}"
+        if (torusSFAKey != null) {
+            val text = "Private Key: ${torusSFAKey.getPrivateKey()}"
             tv.text = text
         }
     }

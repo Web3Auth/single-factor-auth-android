@@ -3,7 +3,12 @@ package com.web3auth.singlefactorauth
 import android.content.Context
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
-import com.web3auth.singlefactorauth.types.*
+import com.web3auth.singlefactorauth.types.ErrorCode
+import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.SFAError
+import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.TorusSFAKey
+import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
@@ -47,6 +52,10 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         } else {
             nodeDetails.torusNodeEndpoints
         }
+    }
+
+    fun isSessionIdExists(): Boolean {
+        return sessionManager.getSessionId().isNotEmpty()
     }
 
     fun getTorusKey(
