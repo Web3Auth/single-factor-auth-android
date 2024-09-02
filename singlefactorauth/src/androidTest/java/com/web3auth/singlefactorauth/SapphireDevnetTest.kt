@@ -3,7 +3,7 @@ package com.web3auth.singlefactorauth
 import androidx.test.platform.app.InstrumentationRegistry
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.SFAParams
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException
 class SapphireDevnetTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SingleFactorAuthArgs
+    private lateinit var sfaParams: SFAParams
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
@@ -32,7 +32,7 @@ class SapphireDevnetTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SingleFactorAuthArgs(
+        sfaParams = SFAParams(
             Web3AuthNetwork.SAPPHIRE_DEVNET,
             "CLIENT ID", null, 0
         )
@@ -65,7 +65,7 @@ class SapphireDevnetTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SingleFactorAuthArgs(
+        sfaParams = SFAParams(
             Web3AuthNetwork.SAPPHIRE_DEVNET,
             "CLIENT_ID"
         )

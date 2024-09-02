@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.SFAParams
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 
 class MainActivity : AppCompatActivity() {
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTorusKey: Button
     private lateinit var tv: TextView
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SingleFactorAuthArgs
+    private lateinit var sfaParams: SFAParams
     lateinit var loginParams: LoginParams
     var TEST_VERIFIER = "torus-test-health"
     var TORUS_TEST_EMAIL = "hello@tor.us"
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         sfaParams =
-            SingleFactorAuthArgs(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null,0)
+            SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null, 0)
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
