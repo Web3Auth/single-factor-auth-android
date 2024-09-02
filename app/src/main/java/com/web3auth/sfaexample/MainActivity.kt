@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
         if (singleFactorAuth.isSessionIdExists()) {
-            val torusSFAKey = singleFactorAuth.initialize(this.applicationContext)
-            val text = "Private Key: ${torusSFAKey.getPrivateKey()}"
+            val sfakey = singleFactorAuth.initialize(this.applicationContext)
+            val text = "Private Key: ${sfakey.getPrivateKey()}"
             tv.text = text
         }
     }
@@ -45,10 +45,10 @@ class MainActivity : AppCompatActivity() {
     private fun getTorusKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val torusSFAKey =
-            singleFactorAuth.getKey(loginParams, this.applicationContext)
-        if (torusSFAKey != null) {
-            val text = "Private Key: ${torusSFAKey.getPrivateKey()}"
+        val sfakey =
+            singleFactorAuth.connect(loginParams, this.applicationContext)
+        if (sfakey != null) {
+            val text = "Private Key: ${sfakey.getPrivateKey()}"
             tv.text = text
         }
     }

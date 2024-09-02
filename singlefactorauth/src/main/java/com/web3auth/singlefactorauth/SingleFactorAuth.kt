@@ -99,7 +99,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
         }
     }
 
-    fun getKey(
+    fun connect(
         loginParams: LoginParams,
         ctx: Context
     ): TorusSFAKey? {

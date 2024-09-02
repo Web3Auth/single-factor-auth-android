@@ -20,7 +20,8 @@ class SFAParams(
         this.networkUrl = networkUrl
         this.serverTimeOffset = serverTimeOffset
     }
-    fun getClientId(): String? {
+
+    fun getClientId(): String {
         return clientid
     }
     fun getNetwork(): Web3AuthNetwork {
