@@ -3,7 +3,12 @@ package com.web3auth.singlefactorauth
 import android.content.Context
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
-import com.web3auth.singlefactorauth.types.*
+import com.web3auth.singlefactorauth.types.ErrorCode
+import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.SFAError
+import com.web3auth.singlefactorauth.types.SFAParams
+import com.web3auth.singlefactorauth.types.TorusSFAKey
+import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
@@ -16,7 +21,7 @@ import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
 
-class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
+class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     private var nodeDetailManager: FetchNodeDetails =
         FetchNodeDetails(sfaParams.getNetwork())
     private val torusUtils: TorusUtils
@@ -37,7 +42,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
     }
 
     fun initialize(ctx: Context): TorusSFAKey {
-         val data = sessionManager.authorizeSession(ctx).get()
+        val data = sessionManager.authorizeSession(ctx.packageName, ctx).get()
          return gson.fromJson(JSONObject(data).toString(), TorusSFAKey::class.java)
     }
 
@@ -47,6 +52,10 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         } else {
             nodeDetails.torusNodeEndpoints
         }
+    }
+
+    fun isSessionIdExists(): Boolean {
+        return sessionManager.getSessionId().isNotEmpty()
     }
 
     fun getTorusKey(
@@ -90,7 +99,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
         }
     }
 
-    fun getKey(
+    fun connect(
         loginParams: LoginParams,
         ctx: Context
     ): TorusSFAKey? {
@@ -113,7 +122,7 @@ class SingleFactorAuth(sfaParams: SingleFactorAuthArgs, ctx: Context) {
             json.put("publickAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(),86400,ctx).get()
+        sessionManager.createSession(json.toString(), 86400, ctx, ctx.packageName).get()
         return torusSFAKey
     }
 }
