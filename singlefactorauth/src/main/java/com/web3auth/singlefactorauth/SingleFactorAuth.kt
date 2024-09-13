@@ -6,8 +6,8 @@ import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.types.ErrorCode
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SFAError
+import com.web3auth.singlefactorauth.types.SFAKey
 import com.web3auth.singlefactorauth.types.SFAParams
-import com.web3auth.singlefactorauth.types.TorusSFAKey
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
@@ -41,9 +41,9 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
         sessionManager = SessionManager(ctx)
     }
 
-    fun initialize(ctx: Context): TorusSFAKey {
+    fun initialize(ctx: Context): SFAKey {
         val data = sessionManager.authorizeSession(ctx.packageName, ctx).get()
-         return gson.fromJson(JSONObject(data).toString(), TorusSFAKey::class.java)
+        return gson.fromJson(JSONObject(data).toString(), SFAKey::class.java)
     }
 
     private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {
@@ -102,13 +102,13 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     fun connect(
         loginParams: LoginParams,
         ctx: Context
-    ): TorusSFAKey? {
+    ): SFAKey? {
         val torusKey = getTorusKey(loginParams)
 
         val torusSFAKey = torusKey?.finalKeyData?.let { it ->
             it.walletAddress?.let { it1 ->
                 it.privKey?.let {it2 ->
-                    TorusSFAKey(
+                    SFAKey(
                         it2,
                         it1
                     )

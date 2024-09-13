@@ -1,6 +1,6 @@
 package com.web3auth.singlefactorauth.types
 
-class TorusSFAKey(
+class SFAKey(
     private val privateKey: String,
     private val publicAddress: String
     ) {
