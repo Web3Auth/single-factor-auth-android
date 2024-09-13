@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         tv = findViewById(R.id.tv)
 
         btnTorusKey.setOnClickListener {
-            getTorusKey()
+            getSFAKey()
         }
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         sfaParams =
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getTorusKey() {
+    private fun getSFAKey() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey =
