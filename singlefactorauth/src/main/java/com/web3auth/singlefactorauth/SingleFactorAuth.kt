@@ -119,7 +119,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
         val json = JSONObject()
         if (torusSFAKey != null) {
             json.put("privateKey", torusSFAKey.getPrivateKey())
-            json.put("publickAddress", torusSFAKey.getPublicAddress())
+            json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
         sessionManager.createSession(json.toString(), 86400, ctx, ctx.packageName).get()
