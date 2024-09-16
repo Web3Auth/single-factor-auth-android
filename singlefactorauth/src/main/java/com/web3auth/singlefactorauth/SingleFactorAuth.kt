@@ -47,11 +47,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     }
 
     private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {
-        return if (this.network.toString().contains("sapphire")) {
-            nodeDetails.torusNodeSSSEndpoints
-        } else {
-            nodeDetails.torusNodeEndpoints
-        }
+        return nodeDetails.torusNodeEndpoints
     }
 
     fun isSessionIdExists(): Boolean {
@@ -101,6 +97,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
 
     fun connect(
         loginParams: LoginParams,
+        sessionTime: Long,
         ctx: Context
     ): SFAKey? {
         val torusKey = getTorusKey(loginParams)
@@ -122,7 +119,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
             json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(), 86400, ctx, ctx.packageName).get()
+        sessionManager.createSession(json.toString(), sessionTime, ctx, ctx.packageName).get()
         return torusSFAKey
     }
 }

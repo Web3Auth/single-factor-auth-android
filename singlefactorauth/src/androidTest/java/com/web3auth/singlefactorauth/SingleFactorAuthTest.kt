@@ -47,7 +47,7 @@ class SingleFactorAuthTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfakey = singleFactorAuth.connect(loginParams, context)
+        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
         if (sfakey != null) {
             assert("0x90A926b698047b4A87265ba1E9D8b512E8489067" == sfakey.getPublicAddress())
             val requiredPrivateKey =
@@ -83,7 +83,7 @@ class SingleFactorAuthTest {
                 )
             )
         )
-        val sfakey = singleFactorAuth.connect(loginParams, context)
+        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
         val requiredPrivateKey =
             BigInteger("68390578bbdab74e9883de58d3919c176662852bdd42a783bc3a08f1a1024e0c", 16)
         if (sfakey != null) {

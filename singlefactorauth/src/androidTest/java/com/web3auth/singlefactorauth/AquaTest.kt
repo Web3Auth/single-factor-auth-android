@@ -51,7 +51,7 @@ class AquaTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfaKey = singleFactorAuth.connect(loginParams, context)
+        val sfaKey = singleFactorAuth.connect(loginParams, 86400, context)
         singleFactorAuth.initialize(context)
         val requiredPrivateKey =
             BigInteger("d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8", 16)
@@ -88,7 +88,7 @@ class AquaTest {
                 )
             )
         )
-        val sfaKey = singleFactorAuth.connect(loginParams, context)
+        val sfaKey = singleFactorAuth.connect(loginParams, 86400, context)
         singleFactorAuth.initialize(context)
         val requiredPrivateKey =
             BigInteger("6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd", 16)

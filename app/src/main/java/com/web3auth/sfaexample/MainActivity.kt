@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey =
-            singleFactorAuth.connect(loginParams, this.applicationContext)
+            singleFactorAuth.connect(loginParams, 86400, this.applicationContext)
         if (sfakey != null) {
             val text =
                 "Public Address: ${sfakey.getPublicAddress()} , Private Key: ${sfakey.getPrivateKey()}"
