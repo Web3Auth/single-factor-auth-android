@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         sfaParams =
             SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, this)
+        singleFactorAuth = SingleFactorAuth(sfaParams, this, 86400, this.packageName)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
         if (singleFactorAuth.isSessionIdExists()) {
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey =
-            singleFactorAuth.connect(loginParams, 86400, this.applicationContext)
+            singleFactorAuth.connect(loginParams, this.applicationContext)
         if (sfakey != null) {
             val text =
                 "Public Address: ${sfakey.getPublicAddress()} , Private Key: ${sfakey.getPrivateKey()}"

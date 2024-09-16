@@ -21,7 +21,12 @@ import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
 
-class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
+class SingleFactorAuth(
+    sfaParams: SFAParams,
+    ctx: Context,
+    sessionTime: Long,
+    allowedOrigin: String
+) {
     private var nodeDetailManager: FetchNodeDetails =
         FetchNodeDetails(sfaParams.getNetwork())
     private val torusUtils: TorusUtils
@@ -30,15 +35,13 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     private var network: Web3AuthNetwork
 
     init {
-        val torusOptions = sfaParams.getClientId()?.let {
-            TorusOptions(
-                it, sfaParams.getNetwork(),
-                sfaParams.getNetworkUrl(), sfaParams.getServerTimeOffset(), true
-            )
-        }
+        val torusOptions = TorusOptions(
+            sfaParams.getClientId(), sfaParams.getNetwork(),
+            sfaParams.getNetworkUrl(), sfaParams.getServerTimeOffset(), true
+        )
         network = sfaParams.getNetwork()
         torusUtils = TorusUtils(torusOptions)
-        sessionManager = SessionManager(ctx)
+        sessionManager = SessionManager(ctx, sessionTime, allowedOrigin)
     }
 
     fun initialize(ctx: Context): SFAKey {
@@ -97,7 +100,6 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
 
     fun connect(
         loginParams: LoginParams,
-        sessionTime: Long,
         ctx: Context
     ): SFAKey? {
         val torusKey = getTorusKey(loginParams)
@@ -119,7 +121,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
             json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(), sessionTime, ctx, ctx.packageName).get()
+        sessionManager.createSession(json.toString(), ctx).get()
         return torusSFAKey
     }
 }

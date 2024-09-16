@@ -33,7 +33,7 @@ class CyanTest {
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams,context)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -47,7 +47,7 @@ class CyanTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
+        val sfakey = singleFactorAuth.connect(loginParams, context)
         if (sfakey != null) {
             assert("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150" == sfakey.getPublicAddress())
             val requiredPrivateKey =
@@ -63,7 +63,7 @@ class CyanTest {
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID")
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -83,7 +83,7 @@ class CyanTest {
                 )
             )
         )
-        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
+        val sfakey = singleFactorAuth.connect(loginParams, context)
         if (sfakey != null) {
             val requiredPrivateKey =
                 BigInteger("66af498ea82c95d52fdb8c8dedd44cf2f758424a0eecab7ac3dd8721527ea2d4", 16)

@@ -36,7 +36,7 @@ class SapphireDevnetTest {
             Web3AuthNetwork.SAPPHIRE_DEVNET,
             "CLIENT ID", null, 0
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -50,7 +50,7 @@ class SapphireDevnetTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
+        val sfakey = singleFactorAuth.connect(loginParams, context)
         if (sfakey != null) {
             assert("0x462A8BF111A55C9354425F875F89B22678c0Bc44" == sfakey.getPublicAddress())
             val requiredPrivateKey =
@@ -69,7 +69,7 @@ class SapphireDevnetTest {
             Web3AuthNetwork.SAPPHIRE_DEVNET,
             "CLIENT_ID"
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams,context)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -89,7 +89,7 @@ class SapphireDevnetTest {
                 )
             )
         )
-        val sfakey = singleFactorAuth.connect(loginParams, 86400, context)
+        val sfakey = singleFactorAuth.connect(loginParams, context)
         val requiredPrivateKey =
             BigInteger("edef171853fdf23ed3cfc702d32cf46f181b475a449d2f7b636924cabecd81d4", 16)
         if (sfakey != null) {
