@@ -34,8 +34,8 @@ class SapphireMainnetTest {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(
             Web3AuthNetwork.SAPPHIRE_MAINNET,
-            "CLIENT ID",
-            null, 0, 86400
+            "CLIENT ID", 86400,
+            null, 0
         )
         singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(

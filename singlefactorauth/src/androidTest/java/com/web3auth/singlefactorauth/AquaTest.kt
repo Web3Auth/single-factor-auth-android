@@ -36,7 +36,7 @@ class AquaTest {
     fun shouldGetTorusKey() {
 
         val context = getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", null, 0, 86400)
+        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", 86400, null, 0)
         singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
