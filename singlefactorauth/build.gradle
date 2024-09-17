@@ -45,7 +45,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.3'
     //session-manager-sdk
     //TODO(): Update version
-    implementation 'com.github.Web3Auth:session-manager-android:feat~constructor-updates-SNAPSHOT'
+    implementation 'com.github.grvgoel81:session-manager-android:6.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'

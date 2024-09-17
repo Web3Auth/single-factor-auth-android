@@ -35,9 +35,9 @@ class SapphireMainnetTest {
         sfaParams = SFAParams(
             Web3AuthNetwork.SAPPHIRE_MAINNET,
             "CLIENT ID",
-            null, 0
+            null, 0, 86400
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -70,7 +70,7 @@ class SapphireMainnetTest {
             Web3AuthNetwork.SAPPHIRE_MAINNET,
             "CLIENT_ID"
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"

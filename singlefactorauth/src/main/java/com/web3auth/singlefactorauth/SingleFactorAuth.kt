@@ -24,7 +24,6 @@ import org.web3j.crypto.Hash
 class SingleFactorAuth(
     sfaParams: SFAParams,
     ctx: Context,
-    sessionTime: Long = 86400,
 ) {
     private var nodeDetailManager: FetchNodeDetails =
         FetchNodeDetails(sfaParams.getNetwork())
@@ -40,7 +39,7 @@ class SingleFactorAuth(
         )
         network = sfaParams.getNetwork()
         torusUtils = TorusUtils(torusOptions)
-        sessionManager = SessionManager(ctx, sessionTime, ctx.packageName)
+        sessionManager = SessionManager(ctx, sfaParams.getSessionTime(), ctx.packageName)
     }
 
     fun initialize(ctx: Context): SFAKey {
