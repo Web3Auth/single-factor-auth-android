@@ -33,8 +33,8 @@ class SingleFactorAuthTest {
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(
-            Web3AuthNetwork.MAINNET, "CLIENT_ID", null,
-            0, 86400
+            Web3AuthNetwork.MAINNET, "CLIENT_ID", 86400, null,
+            0
         )
         singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
