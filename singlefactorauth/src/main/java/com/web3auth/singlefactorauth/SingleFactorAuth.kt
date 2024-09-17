@@ -21,7 +21,11 @@ import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
 
-class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
+class SingleFactorAuth(
+    sfaParams: SFAParams,
+    ctx: Context,
+    sessionTime: Long = 86400,
+) {
     private var nodeDetailManager: FetchNodeDetails =
         FetchNodeDetails(sfaParams.getNetwork())
     private val torusUtils: TorusUtils
@@ -30,15 +34,13 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     private var network: Web3AuthNetwork
 
     init {
-        val torusOptions = sfaParams.getClientId()?.let {
-            TorusOptions(
-                it, sfaParams.getNetwork(),
-                sfaParams.getNetworkUrl(), sfaParams.getServerTimeOffset(), true
-            )
-        }
+        val torusOptions = TorusOptions(
+            sfaParams.getClientId(), sfaParams.getNetwork(),
+            sfaParams.getNetworkUrl(), sfaParams.getServerTimeOffset(), true
+        )
         network = sfaParams.getNetwork()
         torusUtils = TorusUtils(torusOptions)
-        sessionManager = SessionManager(ctx)
+        sessionManager = SessionManager(ctx, sessionTime, ctx.packageName)
     }
 
     fun initialize(ctx: Context): SFAKey {
@@ -47,11 +49,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
     }
 
     private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {
-        return if (this.network.toString().contains("sapphire")) {
-            nodeDetails.torusNodeSSSEndpoints
-        } else {
-            nodeDetails.torusNodeEndpoints
-        }
+        return nodeDetails.torusNodeEndpoints
     }
 
     fun isSessionIdExists(): Boolean {
@@ -122,7 +120,7 @@ class SingleFactorAuth(sfaParams: SFAParams, ctx: Context) {
             json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(), 86400, ctx, ctx.packageName).get()
+        sessionManager.createSession(json.toString(), ctx).get()
         return torusSFAKey
     }
 }

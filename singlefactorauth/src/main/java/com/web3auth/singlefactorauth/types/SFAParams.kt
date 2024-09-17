@@ -4,25 +4,25 @@ import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 
 class SFAParams(
     private var network: Web3AuthNetwork,
-    clientid: String,
+    clientId: String,
     networkUrl: String? = null,
     serverTimeOffset: Int = 0
 ) {
-    private var clientid: String = "torus-default"
+    private var clientId: String = "torus-default"
     private var networkUrl: String? = networkUrl
     private var enableOneKey: Boolean
     private var serverTimeOffset: Int = serverTimeOffset
 
 
     init {
-        this.clientid = clientid
+        this.clientId = clientId
         this.enableOneKey = true
         this.networkUrl = networkUrl
         this.serverTimeOffset = serverTimeOffset
     }
 
     fun getClientId(): String {
-        return clientid
+        return clientId
     }
     fun getNetwork(): Web3AuthNetwork {
         return network
@@ -30,9 +30,6 @@ class SFAParams(
 
     fun getNetworkUrl(): String? {
         return networkUrl
-    }
-    fun get(): Web3AuthNetwork {
-        return network
     }
 
     fun getEnableOneKey(): Boolean {
