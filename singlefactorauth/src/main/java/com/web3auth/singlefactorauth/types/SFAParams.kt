@@ -6,12 +6,14 @@ class SFAParams(
     private var network: Web3AuthNetwork,
     clientId: String,
     networkUrl: String? = null,
-    serverTimeOffset: Int = 0
+    serverTimeOffset: Int = 0,
+    sessionTime: Int = 86400
 ) {
     private var clientId: String = "torus-default"
     private var networkUrl: String? = networkUrl
     private var enableOneKey: Boolean
     private var serverTimeOffset: Int = serverTimeOffset
+    private var sessionTime: Int = sessionTime
 
 
     init {
@@ -19,6 +21,7 @@ class SFAParams(
         this.enableOneKey = true
         this.networkUrl = networkUrl
         this.serverTimeOffset = serverTimeOffset
+        this.sessionTime = sessionTime
     }
 
     fun getClientId(): String {
@@ -38,5 +41,9 @@ class SFAParams(
 
     fun getServerTimeOffset(): Int {
         return serverTimeOffset
+    }
+
+    fun getSessionTime(): Int {
+        return sessionTime
     }
 }

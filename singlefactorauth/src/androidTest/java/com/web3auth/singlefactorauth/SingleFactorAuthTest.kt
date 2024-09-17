@@ -32,8 +32,11 @@ class SingleFactorAuthTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.MAINNET, "CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        sfaParams = SFAParams(
+            Web3AuthNetwork.MAINNET, "CLIENT_ID", null,
+            0, 86400
+        )
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -63,7 +66,7 @@ class SingleFactorAuthTest {
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.MAINNET, "YOUR_CLIENT_ID")
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"

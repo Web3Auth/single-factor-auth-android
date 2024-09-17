@@ -34,9 +34,9 @@ class SapphireDevnetTest {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(
             Web3AuthNetwork.SAPPHIRE_DEVNET,
-            "CLIENT ID", null, 0
+            "CLIENT ID", null, 0, 86400
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -69,7 +69,7 @@ class SapphireDevnetTest {
             Web3AuthNetwork.SAPPHIRE_DEVNET,
             "CLIENT_ID"
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
