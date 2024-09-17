@@ -24,8 +24,8 @@ import org.web3j.crypto.Hash
 class SingleFactorAuth(
     sfaParams: SFAParams,
     ctx: Context,
-    sessionTime: Long,
-    allowedOrigin: String
+    sessionTime: Long = 86400,
+    allowedOrigin: String = "*"
 ) {
     private var nodeDetailManager: FetchNodeDetails =
         FetchNodeDetails(sfaParams.getNetwork())
