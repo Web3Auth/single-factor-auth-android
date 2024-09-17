@@ -33,7 +33,7 @@ class CyanTest {
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -63,7 +63,7 @@ class CyanTest {
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID")
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"

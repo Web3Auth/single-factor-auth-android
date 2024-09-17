@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         sfaParams =
             SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, this, 86400, this.packageName)
+        singleFactorAuth = SingleFactorAuth(sfaParams, this, 86400)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
         if (singleFactorAuth.isSessionIdExists()) {

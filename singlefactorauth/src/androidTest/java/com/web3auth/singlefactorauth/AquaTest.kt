@@ -37,7 +37,7 @@ class AquaTest {
 
         val context = getInstrumentation().context
         sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -68,7 +68,7 @@ class AquaTest {
     fun shouldAggregrateGetTorusKey() {
         sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID")
         val context = getInstrumentation().context
-        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400, context.packageName)
+        singleFactorAuth = SingleFactorAuth(sfaParams, context, 86400)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
