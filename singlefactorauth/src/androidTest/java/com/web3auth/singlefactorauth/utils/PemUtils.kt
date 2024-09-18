@@ -5,6 +5,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
+import java.io.Reader
 import java.security.KeyFactory
 import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
@@ -61,14 +62,26 @@ object PemUtils {
     }
 
     @Throws(IOException::class)
-    fun readPublicKeyFromFile(filepath: String?, algorithm: String): PublicKey? {
+    fun readPublicKeyFromFile(filepath: String, algorithm: String): PublicKey? {
         val bytes = parsePEMFile(File(filepath))
         return getPublicKey(bytes, algorithm)
     }
 
     @Throws(IOException::class)
-    fun readPrivateKeyFromFile(filepath: String?, algorithm: String): PrivateKey? {
-        val bytes = parsePEMFile(File(filepath))
-        return getPrivateKey(bytes, algorithm)
+    fun readPrivateKeyFromReader(reader: Reader, algorithm: String): PrivateKey? {
+        val pemReader = PemReader(reader)
+        val pemObject = pemReader.readPemObject()
+        val content = pemObject.content
+        pemReader.close()
+        return getPrivateKey(content, algorithm)
+    }
+
+    @Throws(IOException::class)
+    fun readPublicKeyFromReader(reader: Reader, algorithm: String): PublicKey? {
+        val pemReader = PemReader(reader)
+        val pemObject = pemReader.readPemObject()
+        val content = pemObject.content
+        pemReader.close()
+        return getPublicKey(content, algorithm)
     }
 }
