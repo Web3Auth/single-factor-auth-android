@@ -6,11 +6,11 @@ class SFAParams(
     private var network: Web3AuthNetwork,
     clientId: String,
     sessionTime: Int = 86400,
-    networkUrl: String? = null,
+    legacyMetaDataHostUrl: String? = null,
     serverTimeOffset: Int = 0,
 ) {
     private var clientId: String = "torus-default"
-    private var legacyMetaDataHostUrl: String? = networkUrl
+    private var legacyMetaDataHostUrl: String? = legacyMetaDataHostUrl
     private var enableOneKey: Boolean
     private var serverTimeOffset: Int = serverTimeOffset
     private var sessionTime: Int = sessionTime
