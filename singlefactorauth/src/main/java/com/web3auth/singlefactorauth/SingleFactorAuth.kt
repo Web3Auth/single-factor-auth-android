@@ -35,7 +35,7 @@ class SingleFactorAuth(
     init {
         val torusOptions = TorusOptions(
             sfaParams.getClientId(), sfaParams.getNetwork(),
-            sfaParams.getNetworkUrl(), sfaParams.getServerTimeOffset(), true
+            sfaParams.getLegacyMetaDataHostUrl(), sfaParams.getServerTimeOffset(), true
         )
         network = sfaParams.getNetwork()
         torusUtils = TorusUtils(torusOptions)

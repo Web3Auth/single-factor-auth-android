@@ -6,11 +6,11 @@ class SFAParams(
     private var network: Web3AuthNetwork,
     clientId: String,
     sessionTime: Int = 86400,
-    networkUrl: String? = null,
+    legacyMetaDataHostUrl: String? = null,
     serverTimeOffset: Int = 0,
 ) {
     private var clientId: String = "torus-default"
-    private var networkUrl: String? = networkUrl
+    private var legacyMetaDataHostUrl: String? = legacyMetaDataHostUrl
     private var enableOneKey: Boolean
     private var serverTimeOffset: Int = serverTimeOffset
     private var sessionTime: Int = sessionTime
@@ -20,7 +20,7 @@ class SFAParams(
         this.clientId = clientId
         this.enableOneKey = true
         this.sessionTime = sessionTime
-        this.networkUrl = networkUrl
+        this.legacyMetaDataHostUrl = legacyMetaDataHostUrl
         this.serverTimeOffset = serverTimeOffset
     }
 
@@ -31,8 +31,8 @@ class SFAParams(
         return network
     }
 
-    fun getNetworkUrl(): String? {
-        return networkUrl
+    fun getLegacyMetaDataHostUrl(): String? {
+        return legacyMetaDataHostUrl
     }
 
     fun getEnableOneKey(): Boolean {
