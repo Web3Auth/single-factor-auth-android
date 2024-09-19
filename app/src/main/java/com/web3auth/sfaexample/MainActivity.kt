@@ -37,9 +37,15 @@ class MainActivity : AppCompatActivity() {
 
         if (singleFactorAuth.isSessionIdExists()) {
             val sfakey = singleFactorAuth.initialize(this.applicationContext)
-            val text =
-                "Public Address: ${sfakey.getPublicAddress()} , Private Key: ${sfakey.getPrivateKey()}"
-            tv.text = text
+            sfakey.whenComplete { response, error ->
+                if (error == null) {
+                    val text =
+                        "Public Address: ${response.getPublicAddress()} , Private Key: ${response.getPrivateKey()}"
+                    tv.text = text
+                } else {
+                    tv.text = error.message
+                }
+            }
         }
     }
 
