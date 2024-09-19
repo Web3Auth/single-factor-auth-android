@@ -1,6 +1,8 @@
 package com.web3auth.singlefactorauth
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.types.ErrorCode
@@ -20,6 +22,7 @@ import org.torusresearch.torusutils.types.common.TorusKey
 import org.torusresearch.torusutils.types.common.TorusOptions
 import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
+import java.util.concurrent.CompletableFuture
 
 class SingleFactorAuth(
     sfaParams: SFAParams,
@@ -42,9 +45,25 @@ class SingleFactorAuth(
         sessionManager = SessionManager(ctx, sfaParams.getSessionTime(), ctx.packageName)
     }
 
-    fun initialize(ctx: Context): SFAKey {
-        val data = sessionManager.authorizeSession(ctx.packageName, ctx).get()
-        return gson.fromJson(JSONObject(data).toString(), SFAKey::class.java)
+    fun initialize(ctx: Context): CompletableFuture<SFAKey> {
+        val sfaCF = CompletableFuture<SFAKey>()
+        val data = sessionManager.authorizeSession(ctx.packageName, ctx)
+        data.whenComplete { response, error ->
+            val mainHandler = Handler(Looper.getMainLooper())
+            mainHandler.post {
+                if (error != null) {
+                    sfaCF.completeExceptionally(error)
+                } else {
+                    sfaCF.complete(
+                        gson.fromJson(
+                            JSONObject(response).toString(),
+                            SFAKey::class.java
+                        )
+                    )
+                }
+            }
+        }
+        return sfaCF
     }
 
     private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {

@@ -40,11 +40,11 @@ dependencies {
 
     implementation 'org.web3j:crypto:4.8.8-android'
     implementation 'org.torusresearch:torus-utils-java:4.0.2'
-    implementation 'org.torusresearch:fetch-node-details-java:5.0.0'
+    api 'org.torusresearch:fetch-node-details-java:5.0.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.slf4j:slf4j-simple:2.0.3'
     //session-manager-sdk
-    implementation 'com.github.Web3Auth:session-manager-android:2.4.0'
+    implementation 'com.github.Web3Auth:session-manager-android:2.4.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
