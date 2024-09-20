@@ -35,16 +35,21 @@ class MainActivity : AppCompatActivity() {
         singleFactorAuth = SingleFactorAuth(sfaParams, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
-        if (singleFactorAuth.isSessionIdExists()) {
-            val sfakey = singleFactorAuth.initialize(this.applicationContext)
-            sfakey.whenComplete { response, error ->
-                if (error == null) {
-                    val text =
-                        "Public Address: ${response.getPublicAddress()} , Private Key: ${response.getPrivateKey()}"
-                    tv.text = text
-                } else {
-                    tv.text = error.message
+        val res = singleFactorAuth.isSessionIdExists(this)
+        res.whenComplete { res, err ->
+            if (err == null) {
+                val sfakey = singleFactorAuth.initialize(this.applicationContext)
+                sfakey.whenComplete { response, error ->
+                    if (error == null) {
+                        val text =
+                            "Public Address: ${response.getPublicAddress()} , Private Key: ${response.getPrivateKey()}"
+                        tv.text = text
+                    } else {
+                        tv.text = error.message
+                    }
                 }
+            } else {
+                tv.text = err.message
             }
         }
     }

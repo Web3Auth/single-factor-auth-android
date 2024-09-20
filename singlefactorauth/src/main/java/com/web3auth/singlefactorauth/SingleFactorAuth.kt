@@ -70,8 +70,17 @@ class SingleFactorAuth(
         return nodeDetails.torusNodeEndpoints
     }
 
-    fun isSessionIdExists(): Boolean {
-        return sessionManager.getSessionId().isNotEmpty()
+    fun isSessionIdExists(ctx: Context): CompletableFuture<Boolean> {
+        val authorizeCF = CompletableFuture<Boolean>()
+        val data = sessionManager.authorizeSession(ctx.packageName, ctx)
+        data.whenComplete { response, error ->
+            if (error != null) {
+                authorizeCF.complete(false)
+            } else {
+                authorizeCF.complete(true)
+            }
+        }
+        return authorizeCF
     }
 
     fun getTorusKey(
@@ -138,7 +147,19 @@ class SingleFactorAuth(
             json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(), ctx).get()
+        sessionManager.createSession(json.toString(), ctx, true).get()
         return torusSFAKey
+    }
+
+    fun logout(context: Context): CompletableFuture<Boolean> {
+        val logoutCF = CompletableFuture<Boolean>()
+        sessionManager.invalidateSession(context).whenComplete { res, err ->
+            if (err != null) {
+                logoutCF.completeExceptionally(err)
+            } else {
+                logoutCF.complete(res)
+            }
+        }
+        return logoutCF
     }
 }
