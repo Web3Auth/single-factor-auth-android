@@ -160,10 +160,10 @@ class SingleFactorAuth(
     fun logout(context: Context): CompletableFuture<Boolean> {
         val logoutCF = CompletableFuture<Boolean>()
         sessionManager.invalidateSession(context).whenComplete { res, err ->
-            if (err != null) {
-                logoutCF.completeExceptionally(err)
-            } else {
+            if (res) {
                 logoutCF.complete(res)
+            } else {
+                logoutCF.completeExceptionally(Exception(ErrorCode.SOMETHING_WENT_WRONG.toString()))
             }
         }
         return logoutCF
