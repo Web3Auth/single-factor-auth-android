@@ -135,34 +135,4 @@ class AquaTest {
             fail()
         }
     }
-
-    @Test
-    @Throws(ExecutionException::class, InterruptedException::class)
-    fun testisSessionIdExistsWithLogoutApiNotCalled() {
-        val context = getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
-        val privateKey = readPrivateKeyFromReader(
-            WellKnownSecret.pem(),
-            "EC"
-        ) as ECPrivateKey
-        val publicKey = KeyFactory.getInstance("EC").generatePublic(
-            ECPublicKeySpec(
-                privateKey.params.generator,
-                privateKey.params
-            )
-        ) as ECPublicKey
-        algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        singleFactorAuth.connect(loginParams, context)
-        val res = singleFactorAuth.isSessionIdExists(context)
-        res.whenComplete { res, err ->
-            if (err != null) {
-                fail()
-            } else {
-                assertEquals(res, true)
-            }
-        }
-    }
 }

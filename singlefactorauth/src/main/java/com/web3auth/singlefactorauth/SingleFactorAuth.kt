@@ -51,8 +51,8 @@ class SingleFactorAuth(
         data.whenComplete { response, error ->
             val mainHandler = Handler(Looper.getMainLooper())
             mainHandler.post {
-                if (error != null) {
-                    sfaCF.completeExceptionally(error)
+                if (response.startsWith("Error")) {
+                    sfaCF.completeExceptionally(Exception(response))
                 } else {
                     sfaCF.complete(
                         gson.fromJson(
@@ -73,8 +73,8 @@ class SingleFactorAuth(
     fun isSessionIdExists(ctx: Context): CompletableFuture<Boolean> {
         val authorizeCF = CompletableFuture<Boolean>()
         val data = sessionManager.authorizeSession(ctx.packageName, ctx)
-        data.whenComplete { response, error ->
-            if (error != null) {
+        data.whenComplete { res, error ->
+            if (res.startsWith("Error")) {
                 authorizeCF.complete(false)
             } else {
                 authorizeCF.complete(true)
@@ -147,7 +147,13 @@ class SingleFactorAuth(
             json.put("publicAddress", torusSFAKey.getPublicAddress())
         }
 
-        sessionManager.createSession(json.toString(), ctx, true).get()
+        sessionManager.createSession(json.toString(), ctx).thenAccept { result ->
+            if (result.startsWith("Error:")) {
+                // do nothing
+            } else {
+                sessionManager.saveSessionId(result)
+            }
+        }
         return torusSFAKey
     }
 

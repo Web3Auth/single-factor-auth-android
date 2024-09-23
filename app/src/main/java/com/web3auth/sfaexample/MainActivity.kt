@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         val res = singleFactorAuth.isSessionIdExists(this)
         res.whenComplete { res, err ->
-            if (err == null) {
+            if (res) {
                 val sfakey = singleFactorAuth.initialize(this.applicationContext)
                 sfakey.whenComplete { response, error ->
                     if (error == null) {
