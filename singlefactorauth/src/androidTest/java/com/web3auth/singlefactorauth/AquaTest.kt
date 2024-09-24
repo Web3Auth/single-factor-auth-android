@@ -9,7 +9,6 @@ import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -96,41 +95,6 @@ class AquaTest {
         if (sfaKey != null) {
             assert(requiredPrivateKey.toString(16) == sfaKey.getPrivateKey())
             assert("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e" == sfaKey.getPublicAddress())
-        } else {
-            fail()
-        }
-    }
-
-    @Test
-    @Throws(ExecutionException::class, InterruptedException::class)
-    fun testisSessionIdExistsWithLogoutApiCalled() {
-        val context = getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
-        val privateKey = readPrivateKeyFromReader(
-            WellKnownSecret.pem(),
-            "EC"
-        ) as ECPrivateKey
-        val publicKey = KeyFactory.getInstance("EC").generatePublic(
-            ECPublicKeySpec(
-                privateKey.params.generator,
-                privateKey.params
-            )
-        ) as ECPublicKey
-        algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        singleFactorAuth.connect(loginParams, context)
-        val logoutCF = singleFactorAuth.logout(context).get()
-        if (logoutCF == true) {
-            val res = singleFactorAuth.isSessionIdExists(context)
-            res.whenComplete { res, err ->
-                if (err != null) {
-                    fail()
-                } else {
-                    assertEquals(res, false)
-                }
-            }
         } else {
             fail()
         }

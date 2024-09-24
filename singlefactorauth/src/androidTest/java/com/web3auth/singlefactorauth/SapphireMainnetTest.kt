@@ -8,7 +8,6 @@ import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
-import junit.framework.TestCase
 import junit.framework.TestCase.fail
 import org.junit.Test
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
@@ -103,71 +102,6 @@ class SapphireMainnetTest {
             )
         } else {
             fail()
-        }
-    }
-
-    @Test
-    @Throws(ExecutionException::class, InterruptedException::class)
-    fun testisSessionIdExistsWithLogoutApiCalled() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
-        val privateKey = readPrivateKeyFromReader(
-            WellKnownSecret.pem(),
-            "EC"
-        ) as ECPrivateKey
-        val publicKey = KeyFactory.getInstance("EC").generatePublic(
-            ECPublicKeySpec(
-                privateKey.params.generator,
-                privateKey.params
-            )
-        ) as ECPublicKey
-        algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        singleFactorAuth.connect(loginParams, context)
-        val logoutCF = singleFactorAuth.logout(context).get()
-        if (logoutCF == true) {
-            val res = singleFactorAuth.isSessionIdExists(context)
-            res.whenComplete { res, err ->
-                if (err != null) {
-                    fail()
-                } else {
-                    TestCase.assertEquals(res, false)
-                }
-            }
-        } else {
-            fail()
-        }
-    }
-
-    @Test
-    @Throws(ExecutionException::class, InterruptedException::class)
-    fun testisSessionIdExistsWithLogoutApiNotCalled() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
-        val privateKey = readPrivateKeyFromReader(
-            WellKnownSecret.pem(),
-            "EC"
-        ) as ECPrivateKey
-        val publicKey = KeyFactory.getInstance("EC").generatePublic(
-            ECPublicKeySpec(
-                privateKey.params.generator,
-                privateKey.params
-            )
-        ) as ECPublicKey
-        algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
-        val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
-        loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        singleFactorAuth.connect(loginParams, context)
-        val res = singleFactorAuth.isSessionIdExists(context)
-        res.whenComplete { res, err ->
-            if (err != null) {
-                fail()
-            } else {
-                TestCase.assertEquals(res, true)
-            }
         }
     }
 }

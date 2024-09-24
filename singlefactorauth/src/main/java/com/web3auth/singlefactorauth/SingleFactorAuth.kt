@@ -70,19 +70,6 @@ class SingleFactorAuth(
         return nodeDetails.torusNodeEndpoints
     }
 
-    fun isSessionIdExists(ctx: Context): CompletableFuture<Boolean> {
-        val authorizeCF = CompletableFuture<Boolean>()
-        val data = sessionManager.authorizeSession(ctx.packageName, ctx)
-        data.whenComplete { res, error ->
-            if (res.startsWith("Error")) {
-                authorizeCF.complete(false)
-            } else {
-                authorizeCF.complete(true)
-            }
-        }
-        return authorizeCF
-    }
-
     fun getTorusKey(
         loginParams: LoginParams
     ): TorusKey? {
