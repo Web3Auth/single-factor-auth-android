@@ -148,7 +148,7 @@ class SingleFactorAuth(
             if (res) {
                 logoutCF.complete(res)
             } else {
-                logoutCF.completeExceptionally(Exception(ErrorCode.SOMETHING_WENT_WRONG.toString()))
+                logoutCF.completeExceptionally(err)
             }
         }
         return logoutCF
