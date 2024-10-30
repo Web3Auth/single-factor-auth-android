@@ -3,14 +3,19 @@ package com.web3auth.singlefactorauth
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.auth0.android.jwt.JWT
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.types.ErrorCode
 import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.LoginType
 import com.web3auth.singlefactorauth.types.SFAError
-import com.web3auth.singlefactorauth.types.SFAKey
-import com.web3auth.singlefactorauth.types.SFAParams
+import com.web3auth.singlefactorauth.types.SessionData
+import com.web3auth.singlefactorauth.types.TorusGenericContainer
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
+import com.web3auth.singlefactorauth.types.UserInfo
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import org.json.JSONObject
 import org.torusresearch.fetchnodedetails.FetchNodeDetails
 import org.torusresearch.fetchnodedetails.types.NodeDetails
@@ -20,46 +25,62 @@ import org.torusresearch.torusutils.types.VerifierParams
 import org.torusresearch.torusutils.types.VerifyParams
 import org.torusresearch.torusutils.types.common.TorusKey
 import org.torusresearch.torusutils.types.common.TorusOptions
-import org.torusresearch.torusutils.types.common.TorusPublicKey
 import org.web3j.crypto.Hash
 import java.util.concurrent.CompletableFuture
 
 class SingleFactorAuth(
-    sfaParams: SFAParams,
+    web3AuthOptions: Web3AuthOptions,
     ctx: Context,
 ) {
     private var nodeDetailManager: FetchNodeDetails =
-        FetchNodeDetails(sfaParams.getNetwork())
+        FetchNodeDetails(web3AuthOptions.getNetwork())
     private val torusUtils: TorusUtils
     private var sessionManager: SessionManager
     private val gson = GsonBuilder().disableHtmlEscaping().create()
     private var network: Web3AuthNetwork
+    private var state: SessionData? = null
 
     init {
         val torusOptions = TorusOptions(
-            sfaParams.getClientId(), sfaParams.getNetwork(),
-            sfaParams.getLegacyMetaDataHostUrl(), sfaParams.getServerTimeOffset(), true
+            web3AuthOptions.getClientId(), web3AuthOptions.getNetwork(), null,
+            web3AuthOptions.getServerTimeOffset(), true
         )
-        network = sfaParams.getNetwork()
+        network = web3AuthOptions.getNetwork()
         torusUtils = TorusUtils(torusOptions)
-        sessionManager = SessionManager(ctx, sfaParams.getSessionTime(), ctx.packageName)
+        sessionManager = SessionManager(ctx, web3AuthOptions.getSessionTime(), ctx.packageName)
     }
 
-    fun initialize(ctx: Context): CompletableFuture<SFAKey> {
-        val sfaCF = CompletableFuture<SFAKey>()
-        val data = sessionManager.authorizeSession(ctx.packageName, ctx)
-        data.whenComplete { response, error ->
-            val mainHandler = Handler(Looper.getMainLooper())
-            mainHandler.post {
-                if (error != null) {
-                    sfaCF.completeExceptionally(error)
-                } else {
-                    sfaCF.complete(
-                        gson.fromJson(
-                            JSONObject(response).toString(),
-                            SFAKey::class.java
+    fun initialize(ctx: Context): CompletableFuture<SessionData> {
+        val sfaCF = CompletableFuture<SessionData>()
+        val savedSessionId = SessionManager.getSessionIdFromStorage()
+        sessionManager.setSessionId(savedSessionId)
+        if (savedSessionId != null && savedSessionId.isNotEmpty()) {
+            val data = sessionManager.authorizeSession(ctx.packageName, ctx)
+            data.whenComplete { response, error ->
+                val mainHandler = Handler(Looper.getMainLooper())
+                mainHandler.post {
+                    if (error != null) {
+                        sfaCF.completeExceptionally(error)
+                    } else {
+                        val data = JSONObject(response)
+                        val privateKey = data.getString("privateKey")
+                        val publicAddress = data.getString("publicAddress")
+                        val userInfo = data.getString("userInfo")
+                        val signatures = data.getString("signatures")
+                        val finalUserInfo = Gson().fromJson(userInfo, UserInfo::class.java)
+                        val finalSignatures = Gson().fromJson(
+                            signatures,
+                            org.torusresearch.torusutils.types.SessionData::class.java
                         )
-                    )
+
+                        state = SessionData(
+                            privateKey = privateKey,
+                            publicAddress = publicAddress,
+                            signatures = finalSignatures,
+                            userInfo = finalUserInfo
+                        )
+                        sfaCF.complete(state)
+                    }
                 }
             }
         }
@@ -70,21 +91,22 @@ class SingleFactorAuth(
         return nodeDetails.torusNodeEndpoints
     }
 
+    fun getSessionData(): SessionData? {
+        return this.state
+    }
+
+    fun isConnected(): Boolean {
+        return this.state != null
+    }
+
     fun getTorusKey(
         loginParams: LoginParams
-    ): TorusKey? {
+    ): TorusKey {
+        lateinit var retrieveSharesResponse: TorusKey
+
         val nodeDetails: NodeDetails =
             nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
                 .get()
-
-        val pubDetails: TorusPublicKey = torusUtils.getUserTypeAndAddress(
-            getTorusNodeEndpoints(nodeDetails), loginParams.verifier,
-            loginParams.verifierId, null
-        )
-
-        if (pubDetails.metadata.isUpgraded) {
-            throw Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA))
-        }
 
         loginParams.subVerifierInfoArray?.let { it ->
             val aggregateIdTokenSeeds: ArrayList<String> = ArrayList()
@@ -104,53 +126,100 @@ class SingleFactorAuth(
             )
 
             val aggregateIdToken = Hash.sha3String(java.lang.String.join(29.toChar().toString(), aggregateIdTokenSeeds)).replace("0x", "")
-            return torusUtils.retrieveShares(getTorusNodeEndpoints(nodeDetails),loginParams.verifier, verifierParams, aggregateIdToken, null)
+            retrieveSharesResponse = torusUtils.retrieveShares(
+                getTorusNodeEndpoints(nodeDetails),
+                loginParams.verifier,
+                verifierParams,
+                aggregateIdToken,
+                null
+            )
         } ?: run{
             val verifierParams = VerifierParams(loginParams.verifierId, null, null, null)
-            return torusUtils.retrieveShares(getTorusNodeEndpoints(nodeDetails),loginParams.verifier, verifierParams, loginParams.idToken, null)
+            retrieveSharesResponse = torusUtils.retrieveShares(
+                getTorusNodeEndpoints(nodeDetails),
+                loginParams.verifier,
+                verifierParams,
+                loginParams.idToken,
+                null
+            )
         }
+
+        val isUpgraded = retrieveSharesResponse.metadata?.isUpgraded
+
+        if (isUpgraded == true) {
+            throw Exception(SFAError.getError(ErrorCode.USER_ALREADY_ENABLED_MFA))
+        }
+
+        return retrieveSharesResponse
     }
 
     fun connect(
         loginParams: LoginParams,
         ctx: Context
-    ): SFAKey? {
+    ): SessionData {
         val torusKey = getTorusKey(loginParams)
 
-        val torusSFAKey = torusKey?.finalKeyData?.let { it ->
-            it.walletAddress?.let { it1 ->
-                it.privKey?.let {it2 ->
-                    SFAKey(
-                        it2,
-                        it1
-                    )
-                }
+        val publicAddress = torusKey.finalKeyData?.walletAddress
+        val privateKey = if (torusKey.finalKeyData?.privKey?.isEmpty() == true) {
+            torusKey.getoAuthKeyData().privKey
+        } else {
+            torusKey.finalKeyData?.privKey
+        }
+
+        var decodedUserInfo: UserInfo? = null
+
+        try {
+            val jwt = decodeJwt(loginParams.idToken)
+            jwt.let {
+                decodedUserInfo = UserInfo(
+                    email = it?.getClaim("email")?.asString() ?: "",
+                    name = it?.getClaim("name")?.asString() ?: "",
+                    profileImage = it?.getClaim("picture")?.asString() ?: "",
+                    verifier = loginParams.verifier,
+                    verifierId = loginParams.verifierId,
+                    typeOfLogin = LoginType.JWT,
+                    state = TorusGenericContainer(params = mapOf())
+                )
             }
+        } catch (e: Exception) {
+            decodedUserInfo = loginParams.fallbackUserInfo
         }
 
-        val json = JSONObject()
-        if (torusSFAKey != null) {
-            json.put("privateKey", torusSFAKey.getPrivateKey())
-            json.put("publicAddress", torusSFAKey.getPublicAddress())
-        }
+        val sessionData = SessionData(
+            privateKey = privateKey.toString(),
+            publicAddress = publicAddress.toString(),
+            signatures = torusKey.sessionData,
+            userInfo = decodedUserInfo
+        )
 
-        sessionManager.createSession(json.toString(), ctx).whenComplete { result, err ->
+        val sessionId = SessionManager.generateRandomSessionKey()
+        sessionManager.setSessionId(sessionId)
+        sessionManager.createSession(gson.toJson(sessionData), ctx).whenComplete { result, err ->
             if (err == null) {
-                sessionManager.saveSessionId(result)
+                SessionManager.saveSessionIdToStorage(result)
+                sessionManager.setSessionId(result)
             }
         }
-        return torusSFAKey
+
+        this.state = sessionData
+        return sessionData
     }
 
-    fun logout(context: Context): CompletableFuture<Boolean> {
-        val logoutCF = CompletableFuture<Boolean>()
+    private fun decodeJwt(token: String): JWT? {
+        return try {
+            JWT(token)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun logout(context: Context) {
         sessionManager.invalidateSession(context).whenComplete { res, err ->
             if (res) {
-                logoutCF.complete(res)
-            } else {
-                logoutCF.completeExceptionally(err)
+                SessionManager.deleteSessionIdFromStorage()
+                this.state = null
             }
         }
-        return logoutCF
     }
 }
