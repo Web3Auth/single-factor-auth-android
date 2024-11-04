@@ -50,41 +50,48 @@ class SingleFactorAuth(
         sessionManager = SessionManager(ctx, web3AuthOptions.getSessionTime(), ctx.packageName)
     }
 
-    fun initialize(ctx: Context): CompletableFuture<SessionData> {
-        val sfaCF = CompletableFuture<SessionData>()
-        val savedSessionId = SessionManager.getSessionIdFromStorage()
-        sessionManager.setSessionId(savedSessionId)
-        if (savedSessionId != null && savedSessionId.isNotEmpty()) {
-            val data = sessionManager.authorizeSession(ctx.packageName, ctx)
-            data.whenComplete { response, error ->
-                val mainHandler = Handler(Looper.getMainLooper())
-                mainHandler.post {
-                    if (error != null) {
-                        sfaCF.completeExceptionally(error)
-                    } else {
-                        val data = JSONObject(response)
-                        val privateKey = data.getString("privateKey")
-                        val publicAddress = data.getString("publicAddress")
-                        val userInfo = data.getString("userInfo")
-                        val signatures = data.getString("signatures")
-                        val finalUserInfo = Gson().fromJson(userInfo, UserInfo::class.java)
-                        val finalSignatures = Gson().fromJson(
-                            signatures,
-                            org.torusresearch.torusutils.types.SessionData::class.java
-                        )
+    fun initialize(ctx: Context): CompletableFuture<SessionData?> {
+        return CompletableFuture.supplyAsync {
+            val savedSessionId = SessionManager.getSessionIdFromStorage()
+            sessionManager.setSessionId(savedSessionId)
 
-                        state = SessionData(
-                            privateKey = privateKey,
-                            publicAddress = publicAddress,
-                            signatures = finalSignatures,
-                            userInfo = finalUserInfo
-                        )
-                        sfaCF.complete(state)
-                    }
+            if (savedSessionId.isEmpty()) {
+                throw IllegalStateException("No session ID found in storage.")
+            }
+
+            val dataFuture = sessionManager.authorizeSession(ctx.packageName, ctx)
+            dataFuture.whenComplete { response, error ->
+                if (error != null) {
+                    throw Exception("Failed to authorize session", error)
                 }
             }
+
+            // Extract data and parse
+            val data = JSONObject(dataFuture.get())
+            val privateKey = data.getString("privateKey")
+            val publicAddress = data.getString("publicAddress")
+            val userInfoJson = data.getString("userInfo")
+            val signaturesJson = data.getString("signatures")
+
+            val finalUserInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            val finalSignatures = Gson().fromJson(
+                signaturesJson,
+                org.torusresearch.torusutils.types.SessionData::class.java
+            )
+
+            // Set state and return
+            state = SessionData(
+                privateKey = privateKey,
+                publicAddress = publicAddress,
+                signatures = finalSignatures,
+                userInfo = finalUserInfo
+            )
+            state
+        }.thenApplyAsync({ sessionData ->
+            sessionData
+        }, { Handler(Looper.getMainLooper()).post(it) }).exceptionally { ex ->
+            throw Exception("Initialization failed", ex)
         }
-        return sfaCF
     }
 
     fun getSessionData(): SessionData? {

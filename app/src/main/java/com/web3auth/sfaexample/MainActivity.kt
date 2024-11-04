@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         sfakey.whenComplete { response, error ->
             if (error == null) {
                 val text =
-                    "Public Address: ${response.publicAddress} , Private Key: ${response.privateKey}"
+                    "Public Address: ${response?.publicAddress} , Private Key: ${response?.privateKey}"
                 tv.text = text
             } else {
                 tv.text = error.message
