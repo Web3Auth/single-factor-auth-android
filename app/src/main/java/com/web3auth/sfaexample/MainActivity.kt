@@ -14,8 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTorusKey: Button
     private lateinit var tv: TextView
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var web3AuthOptions: Web3AuthOptions
-    lateinit var loginParams: LoginParams
+    private lateinit var loginParams: LoginParams
     var TEST_VERIFIER = "torus-test-health"
     var TORUS_TEST_EMAIL = "hello@tor.us"
 
@@ -30,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             getSFAKey()
         }
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
-        web3AuthOptions =
+        val web3AuthOptions =
             Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.SAPPHIRE_MAINNET, 86400)
         singleFactorAuth = SingleFactorAuth(web3AuthOptions, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)

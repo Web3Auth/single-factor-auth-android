@@ -108,7 +108,7 @@ class SingleFactorAuth(
             nodeDetailManager.getNodeDetails(loginParams.verifier, loginParams.verifierId)
                 .get()
 
-        loginParams.subVerifierInfoArray?.let { it ->
+        loginParams.subVerifierInfoArray?.let {
             val aggregateIdTokenSeeds: ArrayList<String> = ArrayList()
             val subVerifierIds: ArrayList<String> = ArrayList()
             val verifyParams: ArrayList<VerifyParams> = ArrayList()
@@ -166,15 +166,15 @@ class SingleFactorAuth(
             torusKey.finalKeyData?.privKey
         }
 
-        var decodedUserInfo: UserInfo? = null
+        var decodedUserInfo: UserInfo?
 
         try {
             val jwt = decodeJwt(loginParams.idToken)
             jwt.let {
                 decodedUserInfo = UserInfo(
-                    email = it?.getClaim("email")?.asString() ?: "",
-                    name = it?.getClaim("name")?.asString() ?: "",
-                    profileImage = it?.getClaim("picture")?.asString() ?: "",
+                    email = it.getClaim("email").asString() ?: "",
+                    name = it.getClaim("name").asString() ?: "",
+                    profileImage = it.getClaim("picture").asString() ?: "",
                     verifier = loginParams.verifier,
                     verifierId = loginParams.verifierId,
                     typeOfLogin = LoginType.JWT,
@@ -205,17 +205,16 @@ class SingleFactorAuth(
         return sessionData
     }
 
-    private fun decodeJwt(token: String): JWT? {
+    private fun decodeJwt(token: String): JWT {
         return try {
             JWT(token)
         } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            throw IllegalArgumentException("Failed to decode JWT token", e)
         }
     }
 
     fun logout(context: Context) {
-        sessionManager.invalidateSession(context).whenComplete { res, err ->
+        sessionManager.invalidateSession(context).whenComplete { res, _ ->
             if (res) {
                 SessionManager.deleteSessionIdFromStorage()
                 this.state = null
