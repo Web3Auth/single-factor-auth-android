@@ -66,7 +66,6 @@ class SingleFactorAuth(
                 }
             }
 
-            // Extract data and parse
             val data = JSONObject(dataFuture.get())
             val privateKey = data.getString("privateKey")
             val publicAddress = data.getString("publicAddress")
@@ -79,7 +78,6 @@ class SingleFactorAuth(
                 org.torusresearch.torusutils.types.SessionData::class.java
             )
 
-            // Set state and return
             state = SessionData(
                 privateKey = privateKey,
                 publicAddress = publicAddress,
