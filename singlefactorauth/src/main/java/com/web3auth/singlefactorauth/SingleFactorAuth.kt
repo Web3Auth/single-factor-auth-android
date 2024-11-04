@@ -87,10 +87,6 @@ class SingleFactorAuth(
         return sfaCF
     }
 
-    private fun getTorusNodeEndpoints(nodeDetails: NodeDetails): Array<String?> {
-        return nodeDetails.torusNodeEndpoints
-    }
-
     fun getSessionData(): SessionData? {
         return this.state
     }
@@ -127,7 +123,7 @@ class SingleFactorAuth(
 
             val aggregateIdToken = Hash.sha3String(java.lang.String.join(29.toChar().toString(), aggregateIdTokenSeeds)).replace("0x", "")
             retrieveSharesResponse = torusUtils.retrieveShares(
-                getTorusNodeEndpoints(nodeDetails),
+                nodeDetails.torusNodeEndpoints,
                 loginParams.verifier,
                 verifierParams,
                 aggregateIdToken,
@@ -136,7 +132,7 @@ class SingleFactorAuth(
         } ?: run{
             val verifierParams = VerifierParams(loginParams.verifierId, null, null, null)
             retrieveSharesResponse = torusUtils.retrieveShares(
-                getTorusNodeEndpoints(nodeDetails),
+                nodeDetails.torusNodeEndpoints,
                 loginParams.verifier,
                 verifierParams,
                 loginParams.idToken,
