@@ -56,7 +56,7 @@ class SingleFactorAuth(
             sessionManager.setSessionId(savedSessionId)
 
             if (savedSessionId.isEmpty()) {
-                throw IllegalStateException("No session ID found in storage.")
+                return@supplyAsync null
             }
 
             val dataFuture = sessionManager.authorizeSession(ctx.packageName, ctx)
