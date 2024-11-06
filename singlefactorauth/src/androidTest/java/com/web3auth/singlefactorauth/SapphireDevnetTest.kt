@@ -3,8 +3,8 @@ package com.web3auth.singlefactorauth
 import androidx.test.platform.app.InstrumentationRegistry
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException
 class SapphireDevnetTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SFAParams
+    private lateinit var web3AuthOptions: Web3AuthOptions
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
@@ -32,11 +32,10 @@ class SapphireDevnetTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(
-            Web3AuthNetwork.SAPPHIRE_DEVNET,
-            "CLIENT ID", 86400, null, 0
+        web3AuthOptions = Web3AuthOptions(
+            "CLIENT ID", Web3AuthNetwork.SAPPHIRE_DEVNET, 86400
         )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -52,10 +51,10 @@ class SapphireDevnetTest {
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey = singleFactorAuth.connect(loginParams, context)
         if (sfakey != null) {
-            assert("0x462A8BF111A55C9354425F875F89B22678c0Bc44" == sfakey.getPublicAddress())
+            assert("0x462A8BF111A55C9354425F875F89B22678c0Bc44" == sfakey.publicAddress)
             val requiredPrivateKey =
                 BigInteger("230dad9f42039569e891e6b066ff5258b14e9764ef5176d74aeb594d1a744203", 16)
-            assert(requiredPrivateKey.toString(16) == sfakey.getPrivateKey())
+            assert(requiredPrivateKey.toString(16) == sfakey.privateKey)
         } else {
             fail()
         }
@@ -65,11 +64,8 @@ class SapphireDevnetTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(
-            Web3AuthNetwork.SAPPHIRE_DEVNET,
-            "CLIENT_ID"
-        )
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        web3AuthOptions = Web3AuthOptions("CLIENT ID", Web3AuthNetwork.SAPPHIRE_DEVNET)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -93,8 +89,8 @@ class SapphireDevnetTest {
         val requiredPrivateKey =
             BigInteger("edef171853fdf23ed3cfc702d32cf46f181b475a449d2f7b636924cabecd81d4", 16)
         if (sfakey != null) {
-            assert(requiredPrivateKey.toString(16) == sfakey.getPrivateKey())
-            assert("0xfC58EB0475F1E3fa05877eE2e1350f6A619E2d78" == sfakey.getPublicAddress())
+            assert(requiredPrivateKey.toString(16) == sfakey.privateKey)
+            assert("0xfC58EB0475F1E3fa05877eE2e1350f6A619E2d78" == sfakey.publicAddress)
         } else {
             fail()
         }

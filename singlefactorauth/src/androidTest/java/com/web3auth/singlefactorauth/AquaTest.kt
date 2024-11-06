@@ -4,8 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException
 class AquaTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SFAParams
+    private lateinit var web3AuthOptions: Web3AuthOptions
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
@@ -36,8 +36,8 @@ class AquaTest {
     fun shouldGetTorusKey() {
 
         val context = getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        web3AuthOptions = Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.AQUA, 86400)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -56,8 +56,8 @@ class AquaTest {
         val requiredPrivateKey =
             BigInteger("d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8", 16)
         if (sfaKey != null) {
-            assert(requiredPrivateKey.toString(16) == sfaKey.getPrivateKey())
-            assert("0x8b32926cD9224fec3B296aA7250B049029434807" == sfaKey.getPublicAddress())
+            assert(requiredPrivateKey.toString(16) == sfaKey.privateKey)
+            assert("0x8b32926cD9224fec3B296aA7250B049029434807" == sfaKey.publicAddress)
         } else {
             fail()
         }
@@ -66,9 +66,9 @@ class AquaTest {
     @Test
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
-        sfaParams = SFAParams(Web3AuthNetwork.AQUA, "YOUR_CLIENT_ID")
+        web3AuthOptions = Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.AQUA)
         val context = getInstrumentation().context
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -93,8 +93,8 @@ class AquaTest {
         val requiredPrivateKey =
             BigInteger("6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd", 16)
         if (sfaKey != null) {
-            assert(requiredPrivateKey.toString(16) == sfaKey.getPrivateKey())
-            assert("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e" == sfaKey.getPublicAddress())
+            assert(requiredPrivateKey.toString(16) == sfaKey.privateKey)
+            assert("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e" == sfaKey.publicAddress)
         } else {
             fail()
         }

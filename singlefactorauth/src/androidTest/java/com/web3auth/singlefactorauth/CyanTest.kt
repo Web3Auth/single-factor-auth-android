@@ -3,8 +3,8 @@ package com.web3auth.singlefactorauth
 import androidx.test.platform.app.InstrumentationRegistry
 import com.auth0.jwt.algorithms.Algorithm
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
 import com.web3auth.singlefactorauth.types.TorusSubVerifierInfo
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import com.web3auth.singlefactorauth.utils.JwtUtils.generateIdToken
 import com.web3auth.singlefactorauth.utils.PemUtils.readPrivateKeyFromReader
 import com.web3auth.singlefactorauth.utils.WellKnownSecret
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException
 class CyanTest {
 
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SFAParams
+    private lateinit var web3AuthOptions: Web3AuthOptions
     lateinit var loginParams: LoginParams
     lateinit var algorithmRs: Algorithm
     var TEST_VERIFIER = "torus-test-health"
@@ -32,8 +32,8 @@ class CyanTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        web3AuthOptions = Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.CYAN, 86400)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -49,10 +49,10 @@ class CyanTest {
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey = singleFactorAuth.connect(loginParams, context)
         if (sfakey != null) {
-            assert("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150" == sfakey.getPublicAddress())
+            assert("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150" == sfakey.publicAddress)
             val requiredPrivateKey =
             BigInteger("223d982054fa1ad27d1497560521e4cce5b8c6438c38533c7bad27ff21ce0546", 16)
-            assert(requiredPrivateKey.toString(16) == sfakey.getPrivateKey())
+            assert(requiredPrivateKey.toString(16) == sfakey.privateKey)
         } else {
             fail()
         }
@@ -62,8 +62,8 @@ class CyanTest {
     @Throws(ExecutionException::class, InterruptedException::class)
     fun shouldAggregrateGetTorusKey() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        sfaParams = SFAParams(Web3AuthNetwork.CYAN, "YOUR_CLIENT_ID")
-        singleFactorAuth = SingleFactorAuth(sfaParams, context)
+        web3AuthOptions = Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.CYAN)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         val privateKey = readPrivateKeyFromReader(
             WellKnownSecret.pem(),
             "EC"
@@ -87,8 +87,8 @@ class CyanTest {
         if (sfakey != null) {
             val requiredPrivateKey =
                 BigInteger("66af498ea82c95d52fdb8c8dedd44cf2f758424a0eecab7ac3dd8721527ea2d4", 16)
-            assert(requiredPrivateKey.toString(16) == sfakey.getPrivateKey())
-            assert("0xFF4c4A0Aa5D633302B5711C3047D7D5967884521" == sfakey.getPublicAddress())
+            assert(requiredPrivateKey.toString(16) == sfakey.privateKey)
+            assert("0xFF4c4A0Aa5D633302B5711C3047D7D5967884521" == sfakey.publicAddress)
         } else {
             fail()
         }

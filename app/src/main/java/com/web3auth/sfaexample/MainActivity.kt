@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 
 class MainActivity : AppCompatActivity() {
@@ -14,8 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTorusKey: Button
     private lateinit var tv: TextView
     lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var sfaParams: SFAParams
-    lateinit var loginParams: LoginParams
+    private lateinit var loginParams: LoginParams
     var TEST_VERIFIER = "torus-test-health"
     var TORUS_TEST_EMAIL = "hello@tor.us"
 
@@ -30,23 +29,22 @@ class MainActivity : AppCompatActivity() {
             getSFAKey()
         }
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
-        sfaParams =
-            SFAParams(Web3AuthNetwork.SAPPHIRE_MAINNET, "YOUR_CLIENT_ID", 86400, null, 0)
-        singleFactorAuth = SingleFactorAuth(sfaParams, this)
+        val web3AuthOptions =
+            Web3AuthOptions("YOUR_CLIENT_ID", Web3AuthNetwork.SAPPHIRE_MAINNET, 86400)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
-        if (singleFactorAuth.isSessionIdExists()) {
-            val sfakey = singleFactorAuth.initialize(this.applicationContext)
-            sfakey.whenComplete { response, error ->
-                if (error == null) {
-                    val text =
-                        "Public Address: ${response.getPublicAddress()} , Private Key: ${response.getPrivateKey()}"
-                    tv.text = text
-                } else {
-                    tv.text = error.message
-                }
+        val sfakey = singleFactorAuth.initialize(this.applicationContext)
+        sfakey.whenComplete { response, error ->
+            if (response != null) {
+                val text =
+                    "Public Address: ${response?.publicAddress} , Private Key: ${response?.privateKey}"
+                tv.text = text
+            } else {
+                tv.text = error.message
             }
         }
+
     }
 
     private fun getSFAKey() {
@@ -56,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             singleFactorAuth.connect(loginParams, this.applicationContext)
         if (sfakey != null) {
             val text =
-                "Public Address: ${sfakey.getPublicAddress()} , Private Key: ${sfakey.getPrivateKey()}"
+                "Public Address: ${sfakey.publicAddress} , Private Key: ${sfakey.privateKey}"
             tv.text = text
         }
     }
