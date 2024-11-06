@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         val sfakey = singleFactorAuth.initialize(this.applicationContext)
         sfakey.whenComplete { response, error ->
-            if (error == null) {
+            if (response != null) {
                 val text =
                     "Public Address: ${response?.publicAddress} , Private Key: ${response?.privateKey}"
                 tv.text = text
