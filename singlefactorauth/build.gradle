@@ -39,7 +39,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     implementation 'org.web3j:crypto:4.8.8-android'
-    implementation 'org.torusresearch:torus-utils-java:4.0.3'
+    api 'org.torusresearch:torus-utils-java:4.0.3'
     api 'org.torusresearch:fetch-node-details-java:5.0.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.slf4j:slf4j-simple:2.0.3'
