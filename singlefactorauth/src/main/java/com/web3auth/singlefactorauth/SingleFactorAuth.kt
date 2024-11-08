@@ -214,12 +214,17 @@ class SingleFactorAuth(
         }
     }
 
-    fun logout(context: Context) {
-        sessionManager.invalidateSession(context).whenComplete { res, _ ->
+    fun logout(context: Context): CompletableFuture<Void> {
+        val logoutCF = CompletableFuture<Void>()
+        sessionManager.invalidateSession(context).whenComplete { res, err ->
             if (res) {
                 SessionManager.deleteSessionIdFromStorage()
                 this.state = null
+                logoutCF.complete(null)
+            } else {
+                logoutCF.completeExceptionally(err)
             }
         }
+        return logoutCF
     }
 }
