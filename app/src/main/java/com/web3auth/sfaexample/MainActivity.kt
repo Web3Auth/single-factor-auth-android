@@ -34,14 +34,11 @@ class MainActivity : AppCompatActivity() {
         singleFactorAuth = SingleFactorAuth(web3AuthOptions, this)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
 
-        val sfakey = singleFactorAuth.initialize(this.applicationContext)
-        sfakey.whenComplete { response, error ->
-            if (response != null) {
+        singleFactorAuth.initialize(this.applicationContext).whenComplete { res, err ->
+            if (err == null) {
                 val text =
-                    "Public Address: ${response?.publicAddress} , Private Key: ${response?.privateKey}"
+                    "Public Address: ${singleFactorAuth.getSessionData()?.publicAddress} , Private Key: ${singleFactorAuth.getSessionData()?.privateKey}"
                 tv.text = text
-            } else {
-                tv.text = error.message
             }
         }
 
