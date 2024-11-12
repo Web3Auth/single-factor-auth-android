@@ -50,7 +50,7 @@ class SingleFactorAuth(
         sessionManager = SessionManager(ctx, web3AuthOptions.getSessionTime(), ctx.packageName)
     }
 
-    fun initialize(ctx: Context): CompletableFuture<SessionData?> {
+    fun initialize(ctx: Context): CompletableFuture<Nothing?> {
         return CompletableFuture.supplyAsync {
             val savedSessionId = SessionManager.getSessionIdFromStorage()
             sessionManager.setSessionId(savedSessionId)
@@ -85,8 +85,8 @@ class SingleFactorAuth(
                 userInfo = finalUserInfo
             )
             state
-        }.thenApplyAsync({ sessionData ->
-            sessionData
+        }.thenApplyAsync({ _ ->
+            null
         }, { Handler(Looper.getMainLooper()).post(it) }).exceptionally { ex ->
             throw Exception("Initialization failed", ex)
         }
