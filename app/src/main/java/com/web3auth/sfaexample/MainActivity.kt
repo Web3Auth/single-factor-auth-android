@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         tv = findViewById(R.id.tv)
 
         btnTorusKey.setOnClickListener {
-            getSFAKey()
+            getSessionData()
         }
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         val web3AuthOptions =
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getSFAKey() {
+    private fun getSessionData() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
         val sfakey =

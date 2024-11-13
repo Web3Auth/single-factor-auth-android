@@ -51,13 +51,13 @@ class AquaTest {
         algorithmRs = Algorithm.ECDSA256(publicKey, privateKey)
         val idToken: String = generateIdToken(TORUS_TEST_EMAIL, algorithmRs)
         loginParams = LoginParams(TEST_VERIFIER, TORUS_TEST_EMAIL, idToken)
-        val sfaKey = singleFactorAuth.connect(loginParams, context)
+        val sessionData = singleFactorAuth.connect(loginParams, context)
         singleFactorAuth.initialize(context)
         val requiredPrivateKey =
             BigInteger("d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8", 16)
-        if (sfaKey != null) {
-            assert(requiredPrivateKey.toString(16) == sfaKey.privateKey)
-            assert("0x8b32926cD9224fec3B296aA7250B049029434807" == sfaKey.publicAddress)
+        if (sessionData != null) {
+            assert(requiredPrivateKey.toString(16) == sessionData.privateKey)
+            assert("0x8b32926cD9224fec3B296aA7250B049029434807" == sessionData.publicAddress)
         } else {
             fail()
         }
@@ -88,13 +88,13 @@ class AquaTest {
                 )
             )
         )
-        val sfaKey = singleFactorAuth.connect(loginParams, context)
+        val sessionData = singleFactorAuth.connect(loginParams, context)
         singleFactorAuth.initialize(context)
         val requiredPrivateKey =
             BigInteger("6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd", 16)
-        if (sfaKey != null) {
-            assert(requiredPrivateKey.toString(16) == sfaKey.privateKey)
-            assert("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e" == sfaKey.publicAddress)
+        if (sessionData != null) {
+            assert(requiredPrivateKey.toString(16) == sessionData.privateKey)
+            assert("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e" == sessionData.publicAddress)
         } else {
             fail()
         }
