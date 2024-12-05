@@ -178,7 +178,7 @@ class SingleFactorAuth(
                     profileImage = it.getClaim("picture").asString() ?: "",
                     verifier = loginParams.verifier,
                     verifierId = loginParams.verifierId,
-                    typeOfLogin = LoginType.JWT,
+                    typeOfLogin = LoginType.jwt,
                     state = TorusGenericContainer(params = mapOf())
                 )
             }
