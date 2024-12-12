@@ -413,6 +413,7 @@ class SingleFactorAuth(
             paramMap.put(
                 "options", initOptions
             )
+
             paramMap.put("sessionNamespace", "sfa")
 
             val loginIdCf = getLoginId(paramMap)
