@@ -7,5 +7,6 @@ data class SessionData(
     val privateKey: String,
     val publicAddress: String,
     val signatures: SessionData? = null,
-    val userInfo: UserInfo? = null
+    val userInfo: UserInfo? = null,
+    val sessionNamespace: String = "sfa"
 ) : Serializable
