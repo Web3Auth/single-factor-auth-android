@@ -401,55 +401,61 @@ class SingleFactorAuth(
     ): CompletableFuture<SignResponse> {
         signMsgCF = CompletableFuture()
         WebViewActivity.webViewResultCallback = this
-
         val sessionId = SessionManager.getSessionIdFromStorage()
-        if (sessionId.isNotBlank()) {
-            val sdkUrl = Uri.parse(web3AuthOption.walletSdkUrl)
-            val initOptions = JSONObject(gson.toJson(getInitOptions()))
-            initOptions.put(
-                "chainConfig", gson.toJson(chainConfig)
-            )
-            val paramMap = JSONObject()
-            paramMap.put(
-                "options", initOptions
-            )
-
-            paramMap.put("sessionNamespace", "sfa")
-
-            val loginIdCf = getLoginId(paramMap)
-
-            loginIdCf.whenComplete { loginId, error ->
-                if (error == null) {
-                    val signMessageMap = SignMessage(
-                        loginId = loginId,
-                        sessionId = sessionId,
-                        request = RequestData(
-                            method = method,
-                            params = gson.toJson(requestParams)
-                        ),
-                        appState = appState.let { it },
-                        sessionNamespace = "sfa"
+        fetchProjectConfig().whenComplete { _, err ->
+            if (err == null) {
+                if (sessionId.isNotBlank()) {
+                    val sdkUrl = Uri.parse(web3AuthOption.walletSdkUrl)
+                    val initOptions = JSONObject(gson.toJson(getInitOptions()))
+                    initOptions.put(
+                        "chainConfig", gson.toJson(chainConfig)
+                    )
+                    val paramMap = JSONObject()
+                    paramMap.put(
+                        "options", initOptions
                     )
 
-                    val signMessageHash =
-                        "b64Params=" + gson.toJson(signMessageMap).toByteArray(Charsets.UTF_8)
-                            .toBase64URLString()
+                    paramMap.put("sessionNamespace", "sfa")
 
-                    val url =
-                        Uri.Builder().scheme(sdkUrl.scheme)
-                            .encodedAuthority(sdkUrl.encodedAuthority)
-                            .encodedPath(sdkUrl.encodedPath).appendEncodedPath(path)
-                            .fragment(signMessageHash).build()
-                    //print("message signing url: => $url")
-                    val intent = Intent(baseContext, WebViewActivity::class.java)
-                    intent.putExtra(WEBVIEW_URL, url.toString())
-                    intent.putExtra(REDIRECT_URL, web3AuthOption.redirectUrl.toString())
-                    baseContext.startActivity(intent)
+                    val loginIdCf = getLoginId(paramMap)
+
+                    loginIdCf.whenComplete { loginId, error ->
+                        if (error == null) {
+                            val signMessageMap = SignMessage(
+                                loginId = loginId,
+                                sessionId = sessionId,
+                                request = RequestData(
+                                    method = method,
+                                    params = gson.toJson(requestParams)
+                                ),
+                                appState = appState.let { it },
+                                sessionNamespace = "sfa"
+                            )
+
+                            val signMessageHash =
+                                "b64Params=" + gson.toJson(signMessageMap)
+                                    .toByteArray(Charsets.UTF_8)
+                                    .toBase64URLString()
+
+                            val url =
+                                Uri.Builder().scheme(sdkUrl.scheme)
+                                    .encodedAuthority(sdkUrl.encodedAuthority)
+                                    .encodedPath(sdkUrl.encodedPath).appendEncodedPath(path)
+                                    .fragment(signMessageHash).build()
+                            //print("message signing url: => $url")
+                            val intent = Intent(baseContext, WebViewActivity::class.java)
+                            intent.putExtra(WEBVIEW_URL, url.toString())
+                            intent.putExtra(REDIRECT_URL, web3AuthOption.redirectUrl.toString())
+                            baseContext.startActivity(intent)
+                        }
+                    }
+                } else {
+                    runOnUIThread {
+                        signMsgCF.completeExceptionally(Exception("Please login first to launch wallet"))
+                    }
                 }
-            }
-        } else {
-            runOnUIThread {
-                signMsgCF.completeExceptionally(Exception("Please login first to launch wallet"))
+            } else {
+                runOnUIThread { signMsgCF.completeExceptionally(err) }
             }
         }
         return signMsgCF
