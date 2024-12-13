@@ -6,7 +6,7 @@ data class SignMessage(
     val platform: String = "android",
     val request: RequestData,
     val appState: String? = null,
-    val sessionNamespace: String = "sfa"
+    val namespace: String = "sfa"
 )
 
 data class RequestData(

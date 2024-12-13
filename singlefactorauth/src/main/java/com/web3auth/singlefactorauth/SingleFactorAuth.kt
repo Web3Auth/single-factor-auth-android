@@ -71,7 +71,12 @@ class SingleFactorAuth(
         )
         network = web3AuthOptions.web3AuthNetwork
         torusUtils = TorusUtils(torusOptions)
-        sessionManager = SessionManager(ctx, web3AuthOptions.sessionTime, ctx.packageName)
+        sessionManager = SessionManager(
+            ctx,
+            web3AuthOptions.sessionTime,
+            ctx.packageName,
+            sessionNamespace = "sfa"
+        )
     }
 
     fun initialize(ctx: Context): CompletableFuture<Nothing?> {
@@ -355,7 +360,7 @@ class SingleFactorAuth(
                             )
                             walletMap.addProperty("sessionId", sessionId)
                             walletMap.addProperty("platform", "android")
-                            walletMap.addProperty("sessionNamespace", "sfa")
+                            walletMap.addProperty("namespace", "sfa")
 
                             val walletHash =
                                 "b64Params=" + gson.toJson(walletMap).toByteArray(Charsets.UTF_8)
@@ -410,7 +415,6 @@ class SingleFactorAuth(
                     initOptions.put(
                         "chainConfig", gson.toJson(chainConfig)
                     )
-                    initOptions.put("sessionNamespace", "sfa")
                     val paramMap = JSONObject()
                     paramMap.put(
                         "options", initOptions
@@ -428,7 +432,7 @@ class SingleFactorAuth(
                                     params = gson.toJson(requestParams)
                                 ),
                                 appState = appState.let { it },
-                                sessionNamespace = "sfa"
+                                namespace = "sfa"
                             )
 
                             val signMessageHash =
