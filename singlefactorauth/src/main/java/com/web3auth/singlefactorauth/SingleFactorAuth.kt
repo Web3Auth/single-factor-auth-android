@@ -369,7 +369,7 @@ class SingleFactorAuth(
                             )
                             walletMap.addProperty("sessionId", sessionId)
                             walletMap.addProperty("platform", "android")
-                            walletMap.addProperty("namespace", "sfa")
+                            walletMap.addProperty("sessionNamespace", "sfa")
 
                             val walletHash =
                                 "b64Params=" + gson.toJson(walletMap).toByteArray(Charsets.UTF_8)
@@ -441,7 +441,7 @@ class SingleFactorAuth(
                                     params = gson.toJson(requestParams)
                                 ),
                                 appState = appState.let { it },
-                                namespace = "sfa"
+                                sessionNamespace = "sfa"
                             )
 
                             val signMessageHash =
