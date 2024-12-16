@@ -108,7 +108,7 @@ class SingleFactorAuth(
             )
 
             state = SessionData(
-                privateKey = privateKey,
+                privKey = privateKey,
                 publicAddress = publicAddress,
                 signatures = finalSignatures,
                 userInfo = finalUserInfo
@@ -216,7 +216,7 @@ class SingleFactorAuth(
         }
 
         val sessionData = SessionData(
-            privateKey = privateKey.toString(),
+            privKey = privateKey.toString(),
             publicAddress = publicAddress.toString(),
             signatures = torusKey.sessionData,
             userInfo = decodedUserInfo

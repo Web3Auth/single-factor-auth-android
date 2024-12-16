@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
         val idToken = JwtUtils.generateIdToken(TORUS_TEST_EMAIL)
         val web3AuthOptions =
             Web3AuthOptions(
-                "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-                Web3AuthNetwork.SAPPHIRE_DEVNET,
+                "YOUR_CLIENT_ID",
+                Web3AuthNetwork.SAPPHIRE_MAINNET,
                 86400,
                 redirectUrl = Uri.parse("torusapp://org.torusresearch.web3authexample")
             )
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         singleFactorAuth.initialize(this.applicationContext).whenComplete { res, err ->
             if (err == null) {
                 val text =
-                    "Public Address: ${singleFactorAuth.getSessionData()?.publicAddress} , Private Key: ${singleFactorAuth.getSessionData()?.privateKey}"
+                    "Public Address: ${singleFactorAuth.getSessionData()?.publicAddress} , Private Key: ${singleFactorAuth.getSessionData()?.privKey}"
                 tv.text = text
             }
         }
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         val signMsgButton = findViewById<Button>(R.id.signMsgButton)
         signMsgButton.setOnClickListener {
             val credentials: Credentials =
-                Credentials.create(singleFactorAuth.getSessionData()?.privateKey)
+                Credentials.create(singleFactorAuth.getSessionData()?.privKey)
             val params = JsonArray().apply {
                 add("Hello, World!")
                 add(credentials.address)
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             singleFactorAuth.connect(loginParams, this.applicationContext)
         if (sfakey != null) {
             val text =
-                "Public Address: ${sfakey.publicAddress} , Private Key: ${sfakey.privateKey}"
+                "Public Address: ${sfakey.publicAddress} , Private Key: ${sfakey.privKey}"
             tv.text = text
         }
     }
