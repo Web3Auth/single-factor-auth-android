@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.web3auth.session_manager_android.SessionManager
 import com.web3auth.singlefactorauth.api.ApiHelper
 import com.web3auth.singlefactorauth.api.ApiService
@@ -44,6 +45,7 @@ import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 import org.torusresearch.torusutils.TorusUtils
 import org.torusresearch.torusutils.types.VerifierParams
 import org.torusresearch.torusutils.types.VerifyParams
+import org.torusresearch.torusutils.types.common.SessionToken
 import org.torusresearch.torusutils.types.common.TorusKey
 import org.torusresearch.torusutils.types.common.TorusOptions
 import org.web3j.crypto.Hash
@@ -96,16 +98,14 @@ class SingleFactorAuth(
             }
 
             val data = JSONObject(dataFuture.get())
-            val privateKey = data.getString("privateKey")
+            val privateKey = data.getString("privKey")
             val publicAddress = data.getString("publicAddress")
             val userInfoJson = data.getString("userInfo")
             val signaturesJson = data.getString("signatures")
 
             val finalUserInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
-            val finalSignatures = Gson().fromJson(
-                signaturesJson,
-                org.torusresearch.torusutils.types.SessionData::class.java
-            )
+            val finalSignatures: List<String> =
+                Gson().fromJson(signaturesJson, object : TypeToken<List<String>>() {}.type)
 
             state = SessionData(
                 privKey = privateKey,
@@ -208,7 +208,8 @@ class SingleFactorAuth(
                     verifier = loginParams.verifier,
                     verifierId = loginParams.verifierId,
                     typeOfLogin = LoginType.jwt,
-                    state = TorusGenericContainer(params = mapOf())
+                    state = TorusGenericContainer(params = mapOf()),
+                    idToken = loginParams.idToken
                 )
             }
         } catch (e: Exception) {
@@ -218,7 +219,7 @@ class SingleFactorAuth(
         val sessionData = SessionData(
             privKey = privateKey.toString(),
             publicAddress = publicAddress.toString(),
-            signatures = torusKey.sessionData,
+            signatures = getSignatureData(torusKey.sessionData.sessionTokenData),
             userInfo = decodedUserInfo
         )
 
@@ -255,6 +256,14 @@ class SingleFactorAuth(
             }
         }
         return logoutCF
+    }
+
+    private fun getSignatureData(sessionTokenData: List<SessionToken>): List<String> {
+        return sessionTokenData
+            .filterNotNull()
+            .map { session ->
+                """{"data":"${session.token}","sig":"${session.signature}"}"""
+            }
     }
 
     private fun fetchProjectConfig(): CompletableFuture<Boolean> {
