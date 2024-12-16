@@ -209,7 +209,6 @@ class SingleFactorAuth(
                     verifierId = loginParams.verifierId,
                     typeOfLogin = LoginType.jwt,
                     state = TorusGenericContainer(params = mapOf()),
-                    idToken = loginParams.idToken
                 )
             }
         } catch (e: Exception) {
