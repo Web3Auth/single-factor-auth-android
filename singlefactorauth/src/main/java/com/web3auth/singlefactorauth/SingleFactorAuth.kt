@@ -108,7 +108,7 @@ class SingleFactorAuth(
                 Gson().fromJson(signaturesJson, object : TypeToken<List<String>>() {}.type)
 
             state = SessionData(
-                privKey = privateKey,
+                privateKey = privateKey,
                 publicAddress = publicAddress,
                 signatures = finalSignatures,
                 userInfo = finalUserInfo
@@ -216,7 +216,7 @@ class SingleFactorAuth(
         }
 
         val sessionData = SessionData(
-            privKey = privateKey.toString(),
+            privateKey = privateKey.toString(),
             publicAddress = publicAddress.toString(),
             signatures = getSignatureData(torusKey.sessionData.sessionTokenData),
             userInfo = decodedUserInfo
