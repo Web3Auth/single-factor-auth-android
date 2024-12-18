@@ -1,11 +1,12 @@
 package com.web3auth.singlefactorauth.types
 
-import org.torusresearch.torusutils.types.SessionData
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class SessionData(
-    val privateKey: String,
+    @SerializedName("privKey") val privateKey: String,
     val publicAddress: String,
-    val signatures: SessionData? = null,
-    val userInfo: UserInfo? = null
+    val signatures: List<String>? = null,
+    val userInfo: UserInfo? = null,
+    val sessionNamespace: String = "sfa"
 ) : Serializable

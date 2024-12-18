@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SFAExample</string>
+    <string name="show_wallet_ui">Show Wallet UI</string>
+    <string name="sign_msg">Sign Message</string>
 </resources>
