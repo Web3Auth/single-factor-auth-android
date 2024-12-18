@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         singleFactorAuth.initialize(this.applicationContext).whenComplete { res, err ->
             if (err == null) {
                 val text =
-                    "Public Address: ${singleFactorAuth.getSessionData()?.publicAddress} , Private Key: ${singleFactorAuth.getSessionData()?.privKey}"
+                    "Public Address: ${singleFactorAuth.getSessionData()?.publicAddress} , Private Key: ${singleFactorAuth.getSessionData()?.privateKey}"
                 tv.text = text
             }
         }
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         val signMsgButton = findViewById<Button>(R.id.signMsgButton)
         signMsgButton.setOnClickListener {
             val credentials: Credentials =
-                Credentials.create(singleFactorAuth.getSessionData()?.privKey)
+                Credentials.create(singleFactorAuth.getSessionData()?.privateKey)
             val params = JsonArray().apply {
                 add("Hello, World!")
                 add(credentials.address)
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             singleFactorAuth.connect(loginParams, this.applicationContext)
         if (sfakey != null) {
             val text =
-                "Public Address: ${sfakey.publicAddress} , Private Key: ${sfakey.privKey}"
+                "Public Address: ${sfakey.publicAddress} , Private Key: ${sfakey.privateKey}"
             tv.text = text
         }
     }
