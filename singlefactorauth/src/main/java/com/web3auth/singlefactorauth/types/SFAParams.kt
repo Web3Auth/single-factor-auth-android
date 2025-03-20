@@ -37,6 +37,6 @@ fun getWalletSdkUrl(buildEnv: BuildEnv?): String {
     return sdkUrl
 }
 
-const val walletServicesVersion = "v3"
+const val walletServicesVersion = "v4"
 const val WEBVIEW_URL = "walletUrl"
 const val REDIRECT_URL = "redirectUrl"
