@@ -72,7 +72,24 @@
 
 # Ensure the serialization and deserialization of your models works correctly
 -keep class com.web3auth.singlefactorauth.types.SessionData { *; }
+
+
 -keep class com.web3auth.singlefactorauth.types.UserInfo { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.UserInfo { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.UserInfo {
+    <fields>;
+    <methods>;
+}
+-dontwarn com.web3auth.singlefactorauth.types.UserInfo
+-optimizations !code/allocation/variable,!field/*,!class/merging/*
+
 -keep class com.web3auth.singlefactorauth.types.TorusGenericContainer { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.TorusGenericContainer { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.TorusGenericContainer {
+    <fields>;
+    <methods>;
+}
+-dontwarn com.web3auth.singlefactorauth.types.TorusGenericContainer
+-optimizations !code/allocation/variable,!field/*,!class/merging/*
 
 

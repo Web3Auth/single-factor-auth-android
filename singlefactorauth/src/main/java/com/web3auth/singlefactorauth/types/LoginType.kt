@@ -1,6 +1,10 @@
 package com.web3auth.singlefactorauth.types
 
-enum class LoginType {
+import androidx.annotation.Keep
+import java.io.Serializable
+
+@Keep
+enum class LoginType : Serializable {
     google,
     facebook,
     discord,

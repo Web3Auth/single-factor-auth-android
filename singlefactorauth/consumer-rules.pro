@@ -1,9 +1,29 @@
+# Keep all classes and their members under this package
+-keep class com.web3auth.singlefactorauth.** { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.** { *; }
+-keepclassmembers enum com.web3auth.singlefactorauth.** { *; }
+
+# Keep all classes under the 'types' package and their members
 -keep class com.web3auth.singlefactorauth.types.** { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.** { *; }
+
+# Explicitly keep specific classes to avoid confusion
 -keep class com.web3auth.singlefactorauth.types.SessionData { *; }
 -keep class com.web3auth.singlefactorauth.types.UserInfo { *; }
 -keep class com.web3auth.singlefactorauth.types.TorusGenericContainer { *; }
 
--keep class com.web3auth.singlefactorauth.** { *; }
--keepclassmembers class com.web3auth.singlefactorauth.** { *; }
--keepclassmembers enum com.web3auth.singlefactorauth.** { *; }
--keepclassmembers class com.web3auth.singlefactorauth.types.** { *; }
+# Prevent method-level optimizations for critical classes
+-keepclassmembers class com.web3auth.singlefactorauth.types.UserInfo {
+    <fields>;
+    <methods>;
+}
+-keepclassmembers class com.web3auth.singlefactorauth.types.TorusGenericContainer {
+    <fields>;
+    <methods>;
+}
+
+# Avoid optimizations like method inlining, class merging, etc.
+-optimizations !code/allocation/variable,!field/*,!class/merging/*
+
+# Suppress warnings related to these classes
+-dontwarn com.web3auth.singlefactorauth.**
