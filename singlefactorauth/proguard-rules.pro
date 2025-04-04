@@ -118,5 +118,7 @@
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
+-keep enum com.web3auth.singlefactorauth.types.LoginType { *; }
+
 
 
