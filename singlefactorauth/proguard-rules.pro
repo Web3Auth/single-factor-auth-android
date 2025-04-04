@@ -29,8 +29,11 @@
 
 ##### okhttp3
 # okHttp3
--dontwarn javax.annotation.Nullable
--dontwarn javax.annotation.ParametersAreNonnullByDefault
+# Avoid warnings related to OkHttp and other libraries
+-dontwarn javax.annotation.**
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
+-dontwarn okhttp3.internal.**
+-dontwarn org.bouncycastle.**
 # JSR 305 annotations are for embedding nullability information.
 -dontwarn javax.annotation.**
 # A resource is loaded with a relative path so the package of this class must be preserved.
@@ -43,9 +46,33 @@
 -keep class com.web3auth.session_manager_android.**
 -dontwarn javax.annotation.**
 
+-keepclassmembers class com.web3auth.singlefactorauth.types.SessionData {
+    <fields>;
+}
+-keepclassmembers class com.web3auth.singlefactorauth.types.UserInfo {
+    <fields>;
+}
+-keepclassmembers class com.web3auth.singlefactorauth.types.TorusGenericContainer {
+    <fields>;
+}
+
+-keep class com.web3auth.singlefactorauth.types.** { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.** { <fields>; }
+
+-keepclassmembers enum * { *; }
+
+-keep class * implements com.google.gson.JsonDeserializer
+
 #### GSON
 # Prevent proguard from stripping interface information from TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
+
+# Ensure the serialization and deserialization of your models works correctly
+-keep class com.web3auth.singlefactorauth.types.SessionData { *; }
+-keep class com.web3auth.singlefactorauth.types.UserInfo { *; }
+-keep class com.web3auth.singlefactorauth.types.TorusGenericContainer { *; }
+
+
