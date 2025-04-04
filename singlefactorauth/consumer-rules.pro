@@ -6,3 +6,4 @@
 -keep class com.web3auth.singlefactorauth.** { *; }
 -keepclassmembers class com.web3auth.singlefactorauth.** { *; }
 -keepclassmembers enum com.web3auth.singlefactorauth.** { *; }
+-keepclassmembers class com.web3auth.singlefactorauth.types.** { *; }
