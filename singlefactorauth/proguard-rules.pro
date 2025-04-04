@@ -92,4 +92,31 @@
 -dontwarn com.web3auth.singlefactorauth.types.TorusGenericContainer
 -optimizations !code/allocation/variable,!field/*,!class/merging/*
 
+# Keep the Gson class and its members
+-keep class com.google.gson.** { *; }
+-keepnames class com.google.gson.** { *; }
+
+# Keep the GsonBuilder class and its members
+-keep class com.google.gson.GsonBuilder { *; }
+-keepnames class com.google.gson.GsonBuilder { *; }
+
+# Keep the JsonArray class and its members
+-keep class com.google.gson.JsonArray { *; }
+-keepnames class com.google.gson.JsonArray { *; }
+
+# Keep the JsonObject class and its members
+-keep class com.google.gson.JsonObject { *; }
+-keepnames class com.google.gson.JsonObject { *; }
+
+# Keep the TypeToken class and its members (important for generic type handling)
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keepnames class com.google.gson.reflect.TypeToken { *; }
+
+# Keep generic type information used by TypeToken (very important!)
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
+
 
