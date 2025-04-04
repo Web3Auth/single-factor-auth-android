@@ -1,8 +1,11 @@
 package com.web3auth.singlefactorauth.types
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-enum class ThemeModes {
+@Keep
+enum class ThemeModes : Serializable {
     @SerializedName("light")
     LIGHT,
 

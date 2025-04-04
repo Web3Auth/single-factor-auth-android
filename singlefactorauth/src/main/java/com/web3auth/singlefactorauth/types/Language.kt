@@ -1,8 +1,11 @@
 package com.web3auth.singlefactorauth.types
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-enum class Language {
+@Keep
+enum class Language : Serializable {
     @SerializedName("en") //English
     EN,
 

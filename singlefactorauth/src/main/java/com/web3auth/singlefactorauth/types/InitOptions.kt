@@ -1,11 +1,15 @@
 package com.web3auth.singlefactorauth.types
 
+import androidx.annotation.Keep
+import java.io.Serializable
+
+@Keep
 data class InitOptions(
-    val clientId: String,
-    val network: String,
-    val redirectUrl: String? = null,
-    val whiteLabel: String? = null,
-    val buildEnv: String? = null,
-    val sessionTime: Int? = null,
-    val originData: String? = null
-)
+    @Keep val clientId: String,
+    @Keep val network: String,
+    @Keep val redirectUrl: String? = null,
+    @Keep val whiteLabel: String? = null,
+    @Keep val buildEnv: String? = null,
+    @Keep val sessionTime: Int? = null,
+    @Keep val originData: String? = null
+) : Serializable

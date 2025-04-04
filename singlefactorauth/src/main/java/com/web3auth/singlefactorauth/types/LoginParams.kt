@@ -1,10 +1,14 @@
 package com.web3auth.singlefactorauth.types
 
+import androidx.annotation.Keep
+import java.io.Serializable
+
+@Keep
 data class LoginParams(
-    val verifier: String,
-    val verifierId: String,
-    val idToken: String,
-    val subVerifierInfoArray: Array<TorusSubVerifierInfo>? = null,
-    val serverTimeOffset: Int? = null,
-    val fallbackUserInfo: UserInfo? = null
-)
+    @Keep val verifier: String,
+    @Keep val verifierId: String,
+    @Keep val idToken: String,
+    @Keep val subVerifierInfoArray: Array<TorusSubVerifierInfo>? = null,
+    @Keep val serverTimeOffset: Int? = null,
+    @Keep val fallbackUserInfo: UserInfo? = null
+) : Serializable

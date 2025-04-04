@@ -100,10 +100,10 @@ class SingleFactorAuth(
             val data = JSONObject(dataFuture.get())
             val privateKey = data.getString("privKey")
             val publicAddress = data.getString("publicAddress")
-            val userInfoJson = data.getString("userInfo")
+            val userInfoJsonObject = data.getJSONObject("userInfo")
             val signaturesJson = data.getString("signatures")
 
-            val finalUserInfo = Gson().fromJson(userInfoJson, UserInfo::class.java)
+            val finalUserInfo = Gson().fromJson(userInfoJsonObject.toString(), UserInfo::class.java)
             val finalSignatures: List<String> =
                 Gson().fromJson(signaturesJson, object : TypeToken<List<String>>() {}.type)
 

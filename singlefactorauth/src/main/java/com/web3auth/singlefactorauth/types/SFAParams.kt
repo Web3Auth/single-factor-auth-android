@@ -1,20 +1,23 @@
 package com.web3auth.singlefactorauth.types
 
 import android.net.Uri
+import androidx.annotation.Keep
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
+import java.io.Serializable
 
+@Keep
 data class Web3AuthOptions(
-    var clientId: String,
-    var web3AuthNetwork: Web3AuthNetwork,
-    var sessionTime: Int = 86400,
-    var serverTimeOffset: Int = 0,
-    var storageServerUrl: String? = null,
-    var whiteLabel: WhiteLabelData? = null,
-    var originData: Map<String, String>? = null,
-    var buildEnv: BuildEnv? = BuildEnv.PRODUCTION,
-    @Transient var redirectUrl: Uri? = null,
-    var walletSdkUrl: String? = getWalletSdkUrl(buildEnv)
-) {
+    @Keep var clientId: String,
+    @Keep var web3AuthNetwork: Web3AuthNetwork,
+    @Keep var sessionTime: Int = 86400,
+    @Keep var serverTimeOffset: Int = 0,
+    @Keep var storageServerUrl: String? = null,
+    @Keep var whiteLabel: WhiteLabelData? = null,
+    @Keep var originData: Map<String, String>? = null,
+    @Keep var buildEnv: BuildEnv? = BuildEnv.PRODUCTION,
+    @Keep @Transient var redirectUrl: Uri? = null,
+    @Keep var walletSdkUrl: String? = getWalletSdkUrl(buildEnv)
+) : Serializable {
     init {
         serverTimeOffset = serverTimeOffset ?: 0
     }
