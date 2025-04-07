@@ -120,5 +120,25 @@
 
 -keep enum com.web3auth.singlefactorauth.types.LoginType { *; }
 
+-keep class org.torusresearch.torusutils.** { *; }
+-keepclassmembers class org.torusresearch.torusutils.** { *; }
+
+# Preserve FetchNodeDetails and its fields/methods
+-keep class org.torusresearch.fetchnodedetails.FetchNodeDetails { *; }
+-keep class org.torusresearch.fetchnodedetails.types.** { *; }
+
+# Prevent obfuscation of Torus types, helpers, and utils
+-keep class org.torusresearch.torusutils.** { *; }
+-keep class org.torusresearch.torusutils.analytics.** { *; }
+-keep class org.torusresearch.torusutils.apis.** { *; }
+-keep class org.torusresearch.torusutils.helpers.** { *; }
+-keep class org.torusresearch.torusutils.types.** { *; }
+
+# Keep public APIs used via reflection
+-keepnames class org.torusresearch.** { *; }
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
 
 

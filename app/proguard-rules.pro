@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Keep all classes inside JJWT implementation
+-keep class io.jsonwebtoken.impl.** { *; }
+-keep class io.jsonwebtoken.orgjson.** { *; }
+
+# Keep service loaders
+-keepclassmembers class * {
+    @io.jsonwebtoken.* <methods>;
+}
+-keepattributes *Annotation*
+
